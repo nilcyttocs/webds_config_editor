@@ -26,6 +26,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 
+import Tooltip from "@mui/material/Tooltip";
 import Snackbar from "@mui/material/Snackbar";
 import Typography from "@mui/material/Typography";
 
@@ -100,24 +101,26 @@ const findEntry = (obj: any, key: string): any => {
 };
 
 const buildTrees = (configPrivate: any) => {
-  dynamicConfigList = [];
-  Object.keys(configPrivate.dynamicConfiguration).forEach((item: any) => {
-    const entry = configPrivate.dynamicConfiguration[item];
-    dynamicConfigList.push({
-      key: item,
-      name: entry.name
-    });
-  });
+  dynamicConfigList = Object.keys(configPrivate.dynamicConfiguration).map(
+    (item: any) => {
+      const entry = configPrivate.dynamicConfiguration[item];
+      return {
+        key: item,
+        ...entry
+      };
+    }
+  );
   dynamicConfigList.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
-  staticConfigList = [];
-  Object.keys(configPrivate.staticConfiguration).forEach((item: any) => {
-    const entry = configPrivate.staticConfiguration[item];
-    staticConfigList.push({
-      key: item,
-      name: entry.name
-    });
-  });
+  staticConfigList = Object.keys(configPrivate.staticConfiguration).map(
+    (item: any) => {
+      const entry = configPrivate.staticConfiguration[item];
+      return {
+        key: item,
+        ...entry
+      };
+    }
+  );
   staticConfigList.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
   staticConfigTree = {};
@@ -139,7 +142,7 @@ const buildTrees = (configPrivate: any) => {
       }
       staticConfigTree[entry.section][entry.category].push({
         key: item,
-        name: entry.name
+        ...entry
       });
     }
   });
@@ -230,16 +233,7 @@ export const Landing = (props: any): JSX.Element => {
     setSection("All");
     setSearch("");
     setConfigKey("");
-    setConfigNames(
-      Object.keys(config)
-        .map((item) => {
-          return {
-            key: item,
-            name: findEntry(props.configPrivate, item).name
-          };
-        })
-        .sort((a: any, b: any) => a.name.localeCompare(b.name))
-    );
+    setConfigNames(staticConfigList);
     setAnchorElL1(null);
     setAnchorElL2(null);
   };
@@ -372,14 +366,21 @@ export const Landing = (props: any): JSX.Element => {
         return;
       }
       output.push(
-        <ListItem key={index} dense divider>
-          <ListItemButton
-            onClick={(event) => handleListItemClick(event, item.key)}
-            sx={{ padding: "0px 0px" }}
-          >
-            <ListItemText primary={item.name.trim()} />
-          </ListItemButton>
-        </ListItem>
+        <Tooltip
+          title={item.section + " - " + item.category}
+          enterDelay={1000}
+          placement="bottom-start"
+          disableHoverListener={section !== "All"}
+        >
+          <ListItem key={index} dense divider>
+            <ListItemButton
+              onClick={(event) => handleListItemClick(event, item.key)}
+              sx={{ padding: "0px 0px" }}
+            >
+              <ListItemText primary={item.name.trim()} />
+            </ListItemButton>
+          </ListItem>
+        </Tooltip>
       );
     });
     return output;
