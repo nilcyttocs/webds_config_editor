@@ -367,12 +367,13 @@ export const Landing = (props: any): JSX.Element => {
       }
       output.push(
         <Tooltip
+          key={index}
           title={item.section + " - " + item.category}
           enterDelay={1000}
           placement="bottom-start"
           disableHoverListener={section !== "All"}
         >
-          <ListItem key={index} dense divider>
+          <ListItem dense divider>
             <ListItemButton
               onClick={(event) => handleListItemClick(event, item.key)}
               sx={{ padding: "0px 0px" }}

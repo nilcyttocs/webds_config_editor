@@ -30,8 +30,10 @@ const alertMessageCommitConfig = "Failed to write config to flash.";
 
 const alertMessagePackratID = "Failed to read packrat ID from device.";
 
-const alertMessagePrivateConfig =
+const alertMessageAddPrivateConfig =
   "Failed to retrieve private config JSON file. Please check in file browser in left sidebar and ensure availability of private config JSON file in /Packrat/ directory (e.g. /Packrat/1234567/config_private.json for PR1234567).";
+
+const alertMessageGetPrivateConfig = "Failed to read private config JSON data.";
 
 const ConfigEditorContainer = (props: any) => {
   const [initialized, setInitialized] = useState<boolean>(false);
@@ -40,7 +42,15 @@ const ConfigEditorContainer = (props: any) => {
   const [staticConfig, setStaticConfig] = useState<any>(null);
   const [configPrivate, setConfigPrivate] = useState<any>(null);
 
-  const readPrivateConfig = async () => {
+  const retrievePrivateConfig = async () => {
+    try {
+      await props.service.packrat.cache.addPrivateConfig();
+    } catch (error) {
+      console.error(error);
+      alertMessage = alertMessageAddPrivateConfig;
+      setAlert(true);
+      throw error;
+    }
     let packratID: string;
     try {
       packratID = await props.service.touchcomm.getPackratID();
@@ -48,7 +58,7 @@ const ConfigEditorContainer = (props: any) => {
       console.error(error);
       alertMessage = alertMessagePackratID;
       setAlert(true);
-      return;
+      throw error;
     }
     try {
       const config = await requestAPI<any>(
@@ -59,9 +69,9 @@ const ConfigEditorContainer = (props: any) => {
       console.error(
         `Error - GET /webds/packrat?packrat-id=3210915&filename=config_private.json\n${error}`
       );
-      alertMessage = alertMessagePrivateConfig;
+      alertMessage = alertMessageGetPrivateConfig;
       setAlert(true);
-      return;
+      throw error;
     }
   };
 
@@ -73,7 +83,7 @@ const ConfigEditorContainer = (props: any) => {
       console.error(`Error - GET /webds/command\n${error}`);
       alertMessage = alertMessageReadDynamic;
       setAlert(true);
-      return;
+      throw error;
     }
     try {
       const config = await requestAPI<any>("command?query=getStaticConfig");
@@ -82,8 +92,14 @@ const ConfigEditorContainer = (props: any) => {
       console.error(`Error - GET /webds/command\n${error}`);
       alertMessage = alertMessageReadStatic;
       setAlert(true);
-      return;
+      throw error;
     }
+  };
+
+  const _readConfig = async () => {
+    try {
+      await readConfig();
+    } catch {}
   };
 
   const writeConfig = async (
@@ -104,7 +120,7 @@ const ConfigEditorContainer = (props: any) => {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
       alertMessage = alertMessageWriteDynamic;
       setAlert(true);
-      return;
+      throw error;
     }
     dataToSend = {
       command: "setStaticConfig",
@@ -119,7 +135,7 @@ const ConfigEditorContainer = (props: any) => {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
       alertMessage = alertMessageWriteStatic;
       setAlert(true);
-      return;
+      throw error;
     }
     if (commit) {
       dataToSend = {
@@ -134,27 +150,32 @@ const ConfigEditorContainer = (props: any) => {
         console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
         alertMessage = alertMessageCommitConfig;
         setAlert(true);
-        return;
+        throw error;
       }
     }
   };
 
-  useEffect(() => {
-    if (initialized) {
-      return;
-    }
-    if (
-      dynamicConfig !== null &&
-      staticConfig !== null &&
-      configPrivate !== null
-    ) {
-      setInitialized(true);
-    }
-  }, [initialized, dynamicConfig, staticConfig, configPrivate]);
+  const _writeConfig = async (
+    dynamicConfig: any,
+    staticConfig: any,
+    commit: boolean
+  ) => {
+    try {
+      await writeConfig(dynamicConfig, staticConfig, commit);
+    } catch {}
+  };
 
   useEffect(() => {
-    readConfig();
-    readPrivateConfig();
+    const initialize = async () => {
+      try {
+        await readConfig();
+        await retrievePrivateConfig();
+      } catch {
+        return;
+      }
+      setInitialized(true);
+    };
+    initialize();
   }, []);
 
   const webdsTheme = props.service.ui.getWebDSTheme();
@@ -177,8 +198,8 @@ const ConfigEditorContainer = (props: any) => {
             fontColor={jpFontColor}
             dynamicConfig={dynamicConfig}
             staticConfig={staticConfig}
-            readConfig={readConfig}
-            writeConfig={writeConfig}
+            readConfig={_readConfig}
+            writeConfig={_writeConfig}
             configPrivate={configPrivate}
           />
         ) : (
