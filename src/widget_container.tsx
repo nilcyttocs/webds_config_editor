@@ -168,8 +168,8 @@ const ConfigEditorContainer = (props: any) => {
   useEffect(() => {
     const initialize = async () => {
       try {
-        await readConfig();
         await retrievePrivateConfig();
+        await readConfig();
       } catch {
         return;
       }
