@@ -684,7 +684,7 @@ export const Landing = (props: any): JSX.Element => {
                 onClick={(event) => {
                   updateConfigEntry();
                   props.writeConfig(dynamicConfig, staticConfig, true);
-                  snackMessage = snackMessageWriteToRAM;
+                  snackMessage = snackMessageWriteToFlash;
                   setSnackbar(true);
                 }}
                 sx={{
@@ -699,7 +699,7 @@ export const Landing = (props: any): JSX.Element => {
                 onClick={(event) => {
                   updateConfigEntry();
                   props.writeConfig(dynamicConfig, staticConfig, false);
-                  snackMessage = snackMessageWriteToFlash;
+                  snackMessage = snackMessageWriteToRAM;
                   setSnackbar(true);
                 }}
                 sx={{
