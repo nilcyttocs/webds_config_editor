@@ -146,7 +146,7 @@ const ConfigEditorContainer = (props: any) => {
         setAlert(true);
         throw error;
       }
-      let packratID: string;
+      let packratID: number;
       try {
         packratID = await props.service.touchcomm.getPackratID();
       } catch (error) {
