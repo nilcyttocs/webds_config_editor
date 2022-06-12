@@ -162,7 +162,7 @@ const ConfigEditorContainer = (props: any) => {
         setConfigPrivate(config);
       } catch (error) {
         console.error(
-          `Error - GET /webds/packrat?packrat-id=3210915&filename=config_private.json\n${error}`
+          `Error - GET /webds/packrat?packrat-id=${packratID}&filename=config_private.json\n${error}`
         );
         alertMessage = alertMessageGetPrivateConfig;
         setAlert(true);
