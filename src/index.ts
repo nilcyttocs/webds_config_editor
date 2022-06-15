@@ -4,11 +4,11 @@ import {
   JupyterFrontEndPlugin
 } from "@jupyterlab/application";
 
-import { MainAreaWidget, WidgetTracker } from "@jupyterlab/apputils";
+import { WidgetTracker } from "@jupyterlab/apputils";
 
 import { ILauncher } from "@jupyterlab/launcher";
 
-import { WebDSService } from "@webds/service";
+import { WebDSService, WebDSWidget } from "@webds/service";
 
 import { configEditorIcon } from "./icons";
 
@@ -29,7 +29,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
   ) => {
     console.log("JupyterLab extension @webds/config_editor is activated!");
 
-    let widget: MainAreaWidget;
+    let widget: WebDSWidget;
     const { commands, shell } = app;
     const command: string = "webds_config_editor:open";
     commands.addCommand(command, {
@@ -41,7 +41,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       execute: () => {
         if (!widget || widget.isDisposed) {
           const content = new ConfigEditorWidget(app, service);
-          widget = new MainAreaWidget<ConfigEditorWidget>({ content });
+          widget = new WebDSWidget<ConfigEditorWidget>({ content });
           widget.id = "webds_config_editor_widget";
           widget.title.label = "Configuration Editor";
           widget.title.icon = configEditorIcon;
@@ -62,7 +62,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       category: "WebDS - Tuning"
     });
 
-    let tracker = new WidgetTracker<MainAreaWidget>({
+    let tracker = new WidgetTracker<WebDSWidget>({
       namespace: "webds_config_editor"
     });
     restorer.restore(tracker, {
