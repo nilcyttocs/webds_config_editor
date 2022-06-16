@@ -38,14 +38,14 @@ const alertMessageGetPrivateConfig = "Failed to read private config JSON data.";
 const ConfigEditorContainer = (props: any) => {
   const [initialized, setInitialized] = useState<boolean>(false);
   const [alert, setAlert] = useState<boolean>(false);
-  const [dynamicConfig, setDynamicConfig] = useState<any>(null);
-  const [staticConfig, setStaticConfig] = useState<any>(null);
+  const [config, setConfig] = useState<any>(null);
   const [configPrivate, setConfigPrivate] = useState<any>(null);
 
   const readConfig = async () => {
+    let dynamicConfig: any;
+    let staticConfig: any;
     try {
-      const config = await requestAPI<any>("command?query=getDynamicConfig");
-      setDynamicConfig(config);
+      dynamicConfig = await requestAPI<any>("command?query=getDynamicConfig");
     } catch (error) {
       console.error(
         `Error - GET /webds/command?query=getDynamicConfig\n${error}`
@@ -55,8 +55,7 @@ const ConfigEditorContainer = (props: any) => {
       throw error;
     }
     try {
-      const config = await requestAPI<any>("command?query=getStaticConfig");
-      setStaticConfig(config);
+      staticConfig = await requestAPI<any>("command?query=getStaticConfig");
     } catch (error) {
       console.error(
         `Error - GET /webds/command?query=getStaticConfig\n${error}`
@@ -65,6 +64,10 @@ const ConfigEditorContainer = (props: any) => {
       setAlert(true);
       throw error;
     }
+    setConfig({
+      dynamic: dynamicConfig,
+      static: staticConfig
+    });
   };
 
   const _readConfig = async () => {
@@ -199,8 +202,7 @@ const ConfigEditorContainer = (props: any) => {
         {initialized ? (
           <Landing
             fontColor={jpFontColor}
-            dynamicConfig={dynamicConfig}
-            staticConfig={staticConfig}
+            config={config}
             readConfig={_readConfig}
             writeConfig={_writeConfig}
             configPrivate={configPrivate}

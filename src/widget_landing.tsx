@@ -24,6 +24,8 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemButton from "@mui/material/ListItemButton";
 
+import IconButton from "@mui/material/IconButton";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 
 import Tooltip from "@mui/material/Tooltip";
@@ -148,6 +150,26 @@ const buildTrees = (configPrivate: any) => {
   });
 };
 
+const stringEntry2NumberEntry = (entry: string): number[] | number | null => {
+  if (entry === "") {
+    return null;
+  }
+  const stringEntry: string[] = entry.split(",");
+  const numberEntry: number[] = [];
+  for (const element of stringEntry) {
+    const num = Number(element);
+    if (isNaN(num)) {
+      return null;
+    }
+    numberEntry.push(num);
+  }
+  if (numberEntry.length > 1) {
+    return numberEntry;
+  } else {
+    return numberEntry[0];
+  }
+};
+
 export const Landing = (props: any): JSX.Element => {
   const [alert, setAlert] = useState<boolean>(false);
   const [snackbar, setSnackbar] = useState<boolean>(false);
@@ -163,6 +185,7 @@ export const Landing = (props: any): JSX.Element => {
   const [configValue, setConfigValue] = useState<any>(null);
   const [configNames, setConfigNames] = useState<any>(null);
   const [numValues, setNumValues] = useState<number>(0);
+  const [showReload, setShowReload] = useState<boolean>(false);
   const [dynamicConfig, setDynamicConfig] = useState<any>({});
   const [staticConfig, setStaticConfig] = useState<any>({});
 
@@ -174,22 +197,14 @@ export const Landing = (props: any): JSX.Element => {
       return;
     }
     if (typeof configValue !== "string") {
+      config[configKey] = configValue;
       return;
     }
-    const stringEntry: string[] = configValue.split(",");
-    const numberEntry: number[] = [];
-    for (const element of stringEntry) {
-      const num = Number(element);
-      if (isNaN(num)) {
-        return;
-      }
-      numberEntry.push(num);
+    const numberEntry = stringEntry2NumberEntry(configValue);
+    if (numberEntry === null) {
+      return;
     }
-    if (Array.isArray(config[configKey])) {
-      config[configKey] = numberEntry;
-    } else {
-      config[configKey] = numberEntry[0];
-    }
+    config[configKey] = numberEntry;
   };
 
   const handleMenuOpenL1 = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -274,6 +289,12 @@ export const Landing = (props: any): JSX.Element => {
       return;
     }
     setConfigValue(value);
+    const numberEntry = stringEntry2NumberEntry(value);
+    if (configTab === "dynamic") {
+      setShowReload(!(numberEntry === props.config.dynamic[configKey]));
+    } else {
+      setShowReload(!(numberEntry === props.config.static[configKey]));
+    }
   };
 
   const handleListItemClick = (
@@ -288,6 +309,11 @@ export const Landing = (props: any): JSX.Element => {
       setNumValues(config[key].length);
     } else {
       setNumValues(1);
+    }
+    if (configTab === "dynamic") {
+      setShowReload(!(config[key] === props.config.dynamic[key]));
+    } else {
+      setShowReload(!(config[key] === props.config.static[key]));
     }
   };
 
@@ -397,11 +423,39 @@ export const Landing = (props: any): JSX.Element => {
             {configData.name}
           </Typography>
           <div>
-            {numValues > 1 ? (
-              <Typography sx={{ fontWeight: "bold" }}>Values</Typography>
-            ) : (
-              <Typography sx={{ fontWeight: "bold" }}>Value</Typography>
-            )}
+            <Stack spacing={1} direction="row">
+              {numValues > 1 ? (
+                <Typography sx={{ fontWeight: "bold" }}>Values</Typography>
+              ) : (
+                <Typography sx={{ fontWeight: "bold" }}>Value</Typography>
+              )}
+              <Tooltip
+                title={
+                  "reload value" + (numValues > 1 ? "s" : "") + " from RAM"
+                }
+                enterDelay={500}
+                placement="bottom-start"
+              >
+                <div>
+                  <IconButton
+                    color="primary"
+                    size="small"
+                    disabled={!showReload}
+                    onClick={() => {
+                      if (configTab === "dynamic") {
+                        setConfigValue(props.config.dynamic[configKey]);
+                      } else {
+                        setConfigValue(props.config.static[configKey]);
+                      }
+                      setShowReload(false);
+                    }}
+                    sx={{ padding: "0px" }}
+                  >
+                    <RestartAltIcon fontSize="medium" />
+                  </IconButton>
+                </div>
+              </Tooltip>
+            </Stack>
             <FormControl
               variant="outlined"
               size="small"
@@ -520,9 +574,9 @@ export const Landing = (props: any): JSX.Element => {
   }, [configTab, dynamicConfig, staticConfig]);
 
   useEffect(() => {
-    setDynamicConfig(Object.assign({}, props.dynamicConfig));
-    setStaticConfig(Object.assign({}, props.staticConfig));
-  }, [props.dynamicConfig, props.staticConfig]);
+    setDynamicConfig(Object.assign({}, props.config.dynamic));
+    setStaticConfig(Object.assign({}, props.config.static));
+  }, [props.config]);
 
   useEffect(() => {
     buildTrees(props.configPrivate);
@@ -684,8 +738,10 @@ export const Landing = (props: any): JSX.Element => {
                 onClick={(event) => {
                   updateConfigEntry();
                   props.writeConfig(dynamicConfig, staticConfig, true);
+                  props.readConfig();
                   snackMessage = snackMessageWriteToFlash;
                   setSnackbar(true);
+                  setShowReload(false);
                 }}
                 sx={{
                   minWidth: "120px",
@@ -693,14 +749,16 @@ export const Landing = (props: any): JSX.Element => {
                   textTransform: "none"
                 }}
               >
-                Write To Flash
+                Write to Flash
               </Button>
               <Button
                 onClick={(event) => {
                   updateConfigEntry();
                   props.writeConfig(dynamicConfig, staticConfig, false);
+                  props.readConfig();
                   snackMessage = snackMessageWriteToRAM;
                   setSnackbar(true);
+                  setShowReload(false);
                 }}
                 sx={{
                   minWidth: "120px",
@@ -708,7 +766,7 @@ export const Landing = (props: any): JSX.Element => {
                   textTransform: "none"
                 }}
               >
-                Write To RAM
+                Write to RAM
               </Button>
             </Stack>
           </div>
@@ -723,6 +781,7 @@ export const Landing = (props: any): JSX.Element => {
               variant="text"
               onClick={(event) => {
                 props.readConfig();
+                setShowReload(false);
               }}
               sx={{
                 textTransform: "none"
