@@ -41,6 +41,48 @@ const ConfigEditorContainer = (props: any) => {
   const [config, setConfig] = useState<any>(null);
   const [configPrivate, setConfigPrivate] = useState<any>(null);
 
+  const retrievePrivateConfig = async (buildID?: number) => {
+    try {
+      await props.service.packrat.cache.addPrivateConfig();
+    } catch (error) {
+      console.error(error);
+      alertMessage = alertMessageAddPrivateConfig;
+      setAlert(true);
+      throw error;
+    }
+    let packratID: number;
+    try {
+      packratID = await props.service.touchcomm.getPackratID();
+    } catch (error) {
+      console.error(error);
+      alertMessage = alertMessagePackratID;
+      setAlert(true);
+      throw error;
+    }
+    if (buildID && buildID === packratID) {
+      return;
+    }
+    try {
+      const config = await requestAPI<any>(
+        "packrat?packrat-id=" + packratID + "&filename=config_private.json"
+      );
+      setConfigPrivate(config);
+    } catch (error) {
+      console.error(
+        `Error - GET /webds/packrat?packrat-id=${packratID}&filename=config_private.json\n${error}`
+      );
+      alertMessage = alertMessageGetPrivateConfig;
+      setAlert(true);
+      throw error;
+    }
+  };
+
+  const _retrievePrivateConfig = async () => {
+    try {
+      await retrievePrivateConfig(configPrivate.buildID);
+    } catch {}
+  };
+
   const readConfig = async () => {
     let dynamicConfig: any;
     let staticConfig: any;
@@ -140,38 +182,6 @@ const ConfigEditorContainer = (props: any) => {
   };
 
   useEffect(() => {
-    const retrievePrivateConfig = async () => {
-      try {
-        await props.service.packrat.cache.addPrivateConfig();
-      } catch (error) {
-        console.error(error);
-        alertMessage = alertMessageAddPrivateConfig;
-        setAlert(true);
-        throw error;
-      }
-      let packratID: number;
-      try {
-        packratID = await props.service.touchcomm.getPackratID();
-      } catch (error) {
-        console.error(error);
-        alertMessage = alertMessagePackratID;
-        setAlert(true);
-        throw error;
-      }
-      try {
-        const config = await requestAPI<any>(
-          "packrat?packrat-id=" + packratID + "&filename=config_private.json"
-        );
-        setConfigPrivate(config);
-      } catch (error) {
-        console.error(
-          `Error - GET /webds/packrat?packrat-id=${packratID}&filename=config_private.json\n${error}`
-        );
-        alertMessage = alertMessageGetPrivateConfig;
-        setAlert(true);
-        throw error;
-      }
-    };
     const initialize = async () => {
       try {
         await retrievePrivateConfig();
@@ -182,7 +192,7 @@ const ConfigEditorContainer = (props: any) => {
       setInitialized(true);
     };
     initialize();
-  }, [props.service]);
+  }, []);
 
   const webdsTheme = props.service.ui.getWebDSTheme();
   const jpFontColor = props.service.ui.getJupyterFontColor();
@@ -206,6 +216,7 @@ const ConfigEditorContainer = (props: any) => {
             readConfig={_readConfig}
             writeConfig={_writeConfig}
             configPrivate={configPrivate}
+            retrievePrivateConfig={_retrievePrivateConfig}
           />
         ) : (
           <>

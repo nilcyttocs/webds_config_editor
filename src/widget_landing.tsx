@@ -45,10 +45,6 @@ const snackMessageWriteToRAM = "Configuration written to RAM.";
 
 const snackMessageWriteToFlash = "Configuration written to Flash.";
 
-let dynamicConfigList: any[] = [];
-let staticConfigList: any[] = [];
-let staticConfigTree: any = {};
-
 let staticSection: string | undefined;
 let _staticSection: string | undefined;
 let staticCategory: string | undefined;
@@ -102,30 +98,30 @@ const findEntry = (obj: any, key: string): any => {
   }
 };
 
-const buildTrees = (configPrivate: any) => {
-  dynamicConfigList = Object.keys(configPrivate.dynamicConfiguration).map(
-    (item: any) => {
-      const entry = configPrivate.dynamicConfiguration[item];
-      return {
-        key: item,
-        ...entry
-      };
-    }
-  );
+const buildTrees = (configPrivate: any): any => {
+  const dynamicConfigList: any[] = Object.keys(
+    configPrivate.dynamicConfiguration
+  ).map((item: any) => {
+    const entry = configPrivate.dynamicConfiguration[item];
+    return {
+      key: item,
+      ...entry
+    };
+  });
   dynamicConfigList.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
-  staticConfigList = Object.keys(configPrivate.staticConfiguration).map(
-    (item: any) => {
-      const entry = configPrivate.staticConfiguration[item];
-      return {
-        key: item,
-        ...entry
-      };
-    }
-  );
+  const staticConfigList: any[] = Object.keys(
+    configPrivate.staticConfiguration
+  ).map((item: any) => {
+    const entry = configPrivate.staticConfiguration[item];
+    return {
+      key: item,
+      ...entry
+    };
+  });
   staticConfigList.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
-  staticConfigTree = {};
+  const staticConfigTree: any = {};
   const sections = new Set();
   const categories: any = {};
   Object.keys(configPrivate.staticConfiguration).forEach((item: any) => {
@@ -148,6 +144,11 @@ const buildTrees = (configPrivate: any) => {
       });
     }
   });
+  return {
+    dynamicConfigList,
+    staticConfigList,
+    staticConfigTree
+  };
 };
 
 const stringEntry2NumberEntry = (entry: string): number[] | number | null => {
@@ -179,6 +180,7 @@ export const Landing = (props: any): JSX.Element => {
   const [configTab, setConfigTab] = useState<string>("dynamic");
   const [section, setSection] = useState<string>("");
   const [search, setSearch] = useState<string>("");
+  const [trees, setTrees] = useState<any>({});
   const [config, setConfig] = useState<any>({});
   const [configKey, setConfigKey] = useState<string>("");
   const [configData, setConfigData] = useState<any>(null);
@@ -231,9 +233,9 @@ export const Landing = (props: any): JSX.Element => {
       setSearch("");
       setConfigKey("");
       setConfigNames(
-        staticConfigTree[staticSection][staticCategory].sort((a: any, b: any) =>
-          a.name.localeCompare(b.name)
-        )
+        trees.staticConfigTree[staticSection][
+          staticCategory
+        ].sort((a: any, b: any) => a.name.localeCompare(b.name))
       );
     }
     setAnchorElL1(null);
@@ -248,7 +250,7 @@ export const Landing = (props: any): JSX.Element => {
     setSection("All");
     setSearch("");
     setConfigKey("");
-    setConfigNames(staticConfigList);
+    setConfigNames(trees.staticConfigList);
     setAnchorElL1(null);
     setAnchorElL2(null);
   };
@@ -331,7 +333,7 @@ export const Landing = (props: any): JSX.Element => {
         >
           <Typography variant="body2">All</Typography>
         </MenuItem>
-        {Object.keys(staticConfigTree)
+        {Object.keys(trees.staticConfigTree)
           .sort()
           .map((item, index) => {
             return (
@@ -364,7 +366,7 @@ export const Landing = (props: any): JSX.Element => {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "left" }}
       >
-        {Object.keys(staticConfigTree[_staticSection])
+        {Object.keys(trees.staticConfigTree[_staticSection])
           .sort()
           .map((item, index) => {
             return (
@@ -544,26 +546,26 @@ export const Landing = (props: any): JSX.Element => {
   }, [configNames]);
 
   useEffect(() => {
-    if (configKey !== "") {
-      setConfigValue(config[configKey]);
-    }
-  }, [config, configKey]);
-
-  useEffect(() => {
     if (configTab === "dynamic") {
-      setConfigNames(dynamicConfigList);
+      setConfigNames(trees.dynamicConfigList);
     } else {
       if (staticSection === "All") {
-        setConfigNames(staticConfigList);
+        setConfigNames(trees.staticConfigList);
       } else if (staticSection && staticCategory) {
         setConfigNames(
-          staticConfigTree[staticSection][
+          trees.staticConfigTree[staticSection][
             staticCategory
           ].sort((a: any, b: any) => a.name.localeCompare(b.name))
         );
       }
     }
-  }, [configTab]);
+  }, [configTab, trees]);
+
+  useEffect(() => {
+    if (configKey !== "") {
+      setConfigValue(config[configKey]);
+    }
+  }, [config, configKey]);
 
   useEffect(() => {
     if (configTab === "dynamic") {
@@ -579,8 +581,7 @@ export const Landing = (props: any): JSX.Element => {
   }, [props.config]);
 
   useEffect(() => {
-    buildTrees(props.configPrivate);
-    setConfigNames(dynamicConfigList);
+    setTrees(buildTrees(props.configPrivate));
   }, [props.configPrivate]);
 
   useEffect(() => {
@@ -779,8 +780,9 @@ export const Landing = (props: any): JSX.Element => {
           >
             <Button
               variant="text"
-              onClick={(event) => {
-                props.readConfig();
+              onClick={async (event) => {
+                await props.retrievePrivateConfig();
+                await props.readConfig();
                 setShowReload(false);
               }}
               sx={{
