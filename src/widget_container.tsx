@@ -64,12 +64,12 @@ const ConfigEditorContainer = (props: any) => {
     }
     try {
       const config = await requestAPI<any>(
-        "packrat?packrat-id=" + packratID + "&filename=config_private.json"
+        "packrat/" + packratID + "/config_private.json"
       );
       setConfigPrivate(config);
     } catch (error) {
       console.error(
-        `Error - GET /webds/packrat?packrat-id=${packratID}&filename=config_private.json\n${error}`
+        `Error - GET /webds/packrat/${packratID}/config_private.json\n${error}`
       );
       alertMessage = alertMessageGetPrivateConfig;
       setAlert(true);
@@ -86,22 +86,30 @@ const ConfigEditorContainer = (props: any) => {
   const readConfig = async () => {
     let dynamicConfig: any;
     let staticConfig: any;
+    let dataToSend: any = {
+      command: "getDynamicConfig"
+    };
     try {
-      dynamicConfig = await requestAPI<any>("command?query=getDynamicConfig");
+      dynamicConfig = await requestAPI<any>("command", {
+        body: JSON.stringify(dataToSend),
+        method: "POST"
+      });
     } catch (error) {
-      console.error(
-        `Error - GET /webds/command?query=getDynamicConfig\n${error}`
-      );
+      console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
       alertMessage = alertMessageReadDynamic;
       setAlert(true);
       throw error;
     }
+    dataToSend = {
+      command: "getStaticConfig"
+    };
     try {
-      staticConfig = await requestAPI<any>("command?query=getStaticConfig");
+      staticConfig = await requestAPI<any>("command", {
+        body: JSON.stringify(dataToSend),
+        method: "POST"
+      });
     } catch (error) {
-      console.error(
-        `Error - GET /webds/command?query=getStaticConfig\n${error}`
-      );
+      console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
       alertMessage = alertMessageReadStatic;
       setAlert(true);
       throw error;
