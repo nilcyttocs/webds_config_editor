@@ -14,6 +14,15 @@ import { configEditorIcon } from "./icons";
 
 import { ConfigEditorWidget } from "./widget_container";
 
+namespace Attributes {
+  export const command = "webds_config_editor:open";
+  export const id = "webds_config_editor_widget";
+  export const label = "Configuration Editor";
+  export const caption = "Configuration Editor";
+  export const category = "Touch - Manual Config";
+  export const rank = 10;
+}
+
 /**
  * Initialization data for the @webds/config_editor extension.
  */
@@ -31,10 +40,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     let widget: WebDSWidget;
     const { commands, shell } = app;
-    const command: string = "webds_config_editor:open";
+    const command = Attributes.command;
     commands.addCommand(command, {
-      label: "Configuration Editor",
-      caption: "Configuration Editor",
+      label: Attributes.label,
+      caption: Attributes.caption,
       icon: (args: { [x: string]: any }) => {
         return args["isLauncher"] ? configEditorIcon : undefined;
       },
@@ -42,8 +51,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
         if (!widget || widget.isDisposed) {
           const content = new ConfigEditorWidget(app, service);
           widget = new WebDSWidget<ConfigEditorWidget>({ content });
-          widget.id = "webds_config_editor_widget";
-          widget.title.label = "Configuration Editor";
+          widget.id = Attributes.id;
+          widget.title.label = Attributes.label;
           widget.title.icon = configEditorIcon;
           widget.title.closable = true;
         }
@@ -59,15 +68,16 @@ const plugin: JupyterFrontEndPlugin<void> = {
     launcher.add({
       command,
       args: { isLauncher: true },
-      category: "WebDS - Tuning"
+      category: Attributes.category,
+      rank: Attributes.rank
     });
 
     let tracker = new WidgetTracker<WebDSWidget>({
-      namespace: "webds_config_editor"
+      namespace: Attributes.id
     });
     restorer.restore(tracker, {
       command,
-      name: () => "webds_config_editor"
+      name: () => Attributes.id
     });
   }
 };
