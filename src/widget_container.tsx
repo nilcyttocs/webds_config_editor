@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import { JupyterFrontEnd } from "@jupyterlab/application";
-
 import { ReactWidget } from "@jupyterlab/apputils";
 
 import Alert from "@mui/material/Alert";
@@ -246,12 +244,10 @@ const ConfigEditorContainer = (props: any) => {
 };
 
 export class ConfigEditorWidget extends ReactWidget {
-  frontend: JupyterFrontEnd | null = null;
   service: WebDSService | null = null;
 
-  constructor(app: JupyterFrontEnd, service: WebDSService) {
+  constructor(service: WebDSService) {
     super();
-    this.frontend = app;
     this.service = service;
   }
 
@@ -259,7 +255,6 @@ export class ConfigEditorWidget extends ReactWidget {
     return (
       <div className="jp-webds-widget">
         <ConfigEditorContainer
-          frontend={this.frontend}
           service={this.service}
         />
       </div>

@@ -49,7 +49,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       },
       execute: () => {
         if (!widget || widget.isDisposed) {
-          const content = new ConfigEditorWidget(app, service);
+          const content = new ConfigEditorWidget(service);
           widget = new WebDSWidget<ConfigEditorWidget>({ content });
           widget.id = Attributes.id;
           widget.title.label = Attributes.label;
