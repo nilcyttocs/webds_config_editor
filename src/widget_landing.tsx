@@ -33,9 +33,13 @@ import Snackbar from "@mui/material/Snackbar";
 import Typography from "@mui/material/Typography";
 
 const WIDTH = 1000;
-const HEIGHT = 450;
+const HEIGHT_TITLE = 70;
+const HEIGHT_CONTENT = 450;
+const HEIGHT_CONTROLS = 120;
 
-const BOX_WIDTH = (WIDTH - 2 - 16) / 2 - 16;
+const BOX_WIDTH = (WIDTH - 48 - 2 - 16) / 2 - 16;
+
+const showHelp = false;
 
 let alertMessage = "";
 
@@ -601,23 +605,69 @@ export const Landing = (props: any): JSX.Element => {
           {alertMessage}
         </Alert>
       ) : null}
-      <Box sx={{ width: "100%" }}>
-        <div style={{ minWidth: WIDTH + "px", position: "relative" }}>
-          <div style={{ width: WIDTH + "px" }}>
+      <Stack spacing={2}>
+        <Box
+          sx={{
+            minWidth: WIDTH + "px",
+            height: HEIGHT_TITLE + "px",
+            bgcolor: "section.main"
+          }}
+        >
+          <div
+            style={{
+              width: WIDTH + "px",
+              height: HEIGHT_TITLE + "px",
+              position: "relative"
+            }}
+          >
             <Typography
               variant="h5"
-              sx={{ height: "50px", textAlign: "center" }}
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)"
+              }}
             >
               Configuration Editor
             </Typography>
-            <TabsUnstyled defaultValue={0} onChange={handleTabChange}>
-              <TabsList>
-                <Tab sx={{ paddingTop: "5px" }}>Dynamic Config</Tab>
-                <Tab sx={{ paddingTop: "5px" }}>Static Config</Tab>
-              </TabsList>
-            </TabsUnstyled>
+            {showHelp && (
+              <Button
+                variant="text"
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "16px",
+                  transform: "translate(0%, -50%)"
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{ textDecoration: "underline" }}
+                >
+                  Help
+                </Typography>
+              </Button>
+            )}
           </div>
-          <div style={{ position: "absolute", right: "0px", bottom: "3px" }}>
+        </Box>
+        <Box
+          sx={{
+            minWidth: WIDTH + "px",
+            minHeight: HEIGHT_CONTENT + "px",
+            boxSizing: "border-box",
+            padding: "24px",
+            position: "relative",
+            bgcolor: "section.main"
+          }}
+        >
+          <TabsUnstyled defaultValue={0} onChange={handleTabChange}>
+            <TabsList>
+              <Tab sx={{ paddingTop: "5px" }}>Dynamic Config</Tab>
+              <Tab sx={{ paddingTop: "5px" }}>Static Config</Tab>
+            </TabsList>
+          </TabsUnstyled>
+          <div style={{ position: "absolute", top: "24px", right: "24px" }}>
             <FormControl variant="outlined" size="small">
               <OutlinedInput
                 value={search}
@@ -629,108 +679,118 @@ export const Landing = (props: any): JSX.Element => {
               />
             </FormControl>
           </div>
-        </div>
+          <Box
+            sx={{
+              width: "100%",
+              height: HEIGHT_CONTENT + "px",
+              boxSizing: "border-box",
+              padding: "8px",
+              display: "flex",
+              flexFlow: "row",
+              border: 1,
+              borderRadius: 1,
+              borderColor: "grey.500"
+            }}
+          >
+            <Box
+              sx={{
+                width: BOX_WIDTH + "px",
+                height: HEIGHT_CONTENT - 2 - 16 + "px",
+                display: "flex",
+                flexFlow: "column"
+              }}
+            >
+              {configTab === "static" && (
+                <>
+                  <div
+                    onClick={handleMenuOpenL1}
+                    style={{
+                      width: "100%",
+                      marginTop: "8px",
+                      marginBottom: "16px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <div style={{ display: "flex", flexFlow: "row" }}>
+                      <ArrowRightIcon
+                        fontSize="large"
+                        style={{ color: props.fontColor }}
+                      />
+                      <div
+                        style={{
+                          flex: 1,
+                          display: "flex",
+                          alignItems: "center"
+                        }}
+                      >
+                        {section === "" ? (
+                          <Typography
+                            sx={{ flex: 1, textAlign: "center", color: "gray" }}
+                          >
+                            Section
+                          </Typography>
+                        ) : (
+                          <Typography
+                            variant="body2"
+                            sx={{ flex: 1, textAlign: "center" }}
+                          >
+                            {section}
+                          </Typography>
+                        )}
+                      </div>
+                    </div>
+                    <Divider orientation="horizontal" variant="fullWidth" />
+                  </div>
+                  {generateL1Menu()}
+                  {generateL2Menu()}
+                </>
+              )}
+              <div id="configKeyList" style={{ flex: 1, overflow: "auto" }}>
+                <List sx={{ width: configListWidth + "px" }}>
+                  {generateListItems()}
+                </List>
+              </div>
+            </Box>
+            <Divider
+              orientation="vertical"
+              sx={{
+                height: HEIGHT_CONTENT - 2 - 16 + "px",
+                marginLeft: "16px",
+                marginRight: "16px"
+              }}
+            />
+            <Box
+              sx={{
+                flex: 1,
+                height: HEIGHT_CONTENT - 2 - 16 + "px",
+
+                display: "flex",
+                flexFlow: "column"
+              }}
+            >
+              <div style={{ flex: 1, overflow: "auto" }}>
+                {configKey !== "" && configData !== null && displayConfigData()}
+              </div>
+            </Box>
+          </Box>
+        </Box>
         <Box
           sx={{
             minWidth: WIDTH + "px",
-            height: HEIGHT + "px",
-            display: "flex",
-            flexFlow: "row",
-            boxSizing: "border-box",
-            border: 1,
-            borderRadius: 1,
-            borderColor: "grey.500",
-            padding: "8px"
-          }}
-        >
-          <Box
-            sx={{
-              width: BOX_WIDTH + "px",
-              height: HEIGHT - 16 - 2 + "px",
-              display: "flex",
-              flexFlow: "column"
-            }}
-          >
-            {configTab === "static" && (
-              <>
-                <div
-                  onClick={handleMenuOpenL1}
-                  style={{
-                    width: "100%",
-                    marginTop: "8px",
-                    marginBottom: "16px",
-                    cursor: "pointer"
-                  }}
-                >
-                  <div style={{ display: "flex", flexFlow: "row" }}>
-                    <ArrowRightIcon
-                      fontSize="large"
-                      style={{ color: props.fontColor }}
-                    />
-                    <div
-                      style={{ flex: 1, display: "flex", alignItems: "center" }}
-                    >
-                      {section === "" ? (
-                        <Typography
-                          sx={{ flex: 1, textAlign: "center", color: "gray" }}
-                        >
-                          Section
-                        </Typography>
-                      ) : (
-                        <Typography
-                          variant="body2"
-                          sx={{ flex: 1, textAlign: "center" }}
-                        >
-                          {section}
-                        </Typography>
-                      )}
-                    </div>
-                  </div>
-                  <Divider orientation="horizontal" variant="fullWidth" />
-                </div>
-                {generateL1Menu()}
-                {generateL2Menu()}
-              </>
-            )}
-            <div id="configKeyList" style={{ flex: 1, overflow: "auto" }}>
-              <List sx={{ width: configListWidth + "px" }}>
-                {generateListItems()}
-              </List>
-            </div>
-          </Box>
-          <Divider
-            orientation="vertical"
-            sx={{
-              height: HEIGHT - 16 - 2 + "px",
-              marginLeft: "16px",
-              marginRight: "16px"
-            }}
-          />
-          <Box
-            sx={{
-              flex: 1,
-              height: HEIGHT - 16 - 2 + "px",
-
-              display: "flex",
-              flexFlow: "column"
-            }}
-          >
-            <div style={{ flex: 1, overflow: "auto" }}>
-              {configKey !== "" && configData !== null && displayConfigData()}
-            </div>
-          </Box>
-        </Box>
-        <div
-          style={{
-            minWidth: WIDTH + "px",
-            marginTop: "20px",
-            position: "relative"
+            minHeight: HEIGHT_CONTROLS + "px",
+            position: "relative",
+            bgcolor: "section.main"
           }}
         >
           <div
             style={{
               width: WIDTH + "px",
+              minHeight: HEIGHT_CONTROLS + "px",
+              boxSizing: "border-box",
+              padding: "24px",
               display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
               justifyContent: "center"
             }}
           >
@@ -745,8 +805,7 @@ export const Landing = (props: any): JSX.Element => {
                   setShowReload(false);
                 }}
                 sx={{
-                  minWidth: "120px",
-                  maxWidth: "120px",
+                  width: "150px",
                   textTransform: "none"
                 }}
               >
@@ -762,8 +821,7 @@ export const Landing = (props: any): JSX.Element => {
                   setShowReload(false);
                 }}
                 sx={{
-                  minWidth: "120px",
-                  maxWidth: "120px",
+                  width: "150px",
                   textTransform: "none"
                 }}
               >
@@ -771,38 +829,33 @@ export const Landing = (props: any): JSX.Element => {
               </Button>
             </Stack>
           </div>
-          <div
-            style={{
+          <Button
+            variant="text"
+            onClick={async (event) => {
+              await props.retrievePrivateConfig();
+              await props.readConfig();
+              setShowReload(false);
+            }}
+            sx={{
               position: "absolute",
-              top: "0px",
-              right: "0px"
+              top: "50%",
+              right: "24px",
+              transform: "translate(0%, -50%)"
             }}
           >
-            <Button
-              variant="text"
-              onClick={async (event) => {
-                await props.retrievePrivateConfig();
-                await props.readConfig();
-                setShowReload(false);
-              }}
-              sx={{
-                textTransform: "none"
-              }}
-            >
-              <Typography variant="body2" sx={{ textDecoration: "underline" }}>
-                Reload from RAM
-              </Typography>
-            </Button>
-          </div>
-        </div>
-        <Snackbar
-          open={snackbar}
-          autoHideDuration={3000}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-          message={snackMessage}
-          onClose={() => setSnackbar(false)}
-        />
-      </Box>
+            <Typography variant="body2" sx={{ textDecoration: "underline" }}>
+              Reload from RAM
+            </Typography>
+          </Button>
+        </Box>
+      </Stack>
+      <Snackbar
+        open={snackbar}
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        message={snackMessage}
+        onClose={() => setSnackbar(false)}
+      />
     </>
   );
 };
