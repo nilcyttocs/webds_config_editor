@@ -1,6 +1,6 @@
 {
   "name": "@webds/config_editor",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "webds_config_editor",
   "keywords": [
     "jupyter",
