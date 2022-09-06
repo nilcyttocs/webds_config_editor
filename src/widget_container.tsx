@@ -28,23 +28,23 @@ const alertMessageCommitConfig = "Failed to write config to flash.";
 
 const alertMessagePackratID = "Failed to read packrat ID from device.";
 
-const alertMessageAddPrivateConfig =
-  "Failed to retrieve private config JSON file. Please check in file browser in left sidebar and ensure availability of private config JSON file in /Packrat/ directory (e.g. /Packrat/1234567/config_private.json for PR1234567).";
+const alertMessageAddConfigJSON =
+  "Failed to retrieve config JSON file. Please check in file browser in left sidebar and ensure availability of config JSON file in /Packrat/ directory (e.g. /Packrat/1234567/config.json for PR1234567).";
 
-const alertMessageGetPrivateConfig = "Failed to read private config JSON data.";
+const alertMessageGetConfigJSON = "Failed to read config JSON data.";
 
 const ConfigEditorContainer = (props: any) => {
   const [initialized, setInitialized] = useState<boolean>(false);
   const [alert, setAlert] = useState<boolean>(false);
   const [config, setConfig] = useState<any>(null);
-  const [configPrivate, setConfigPrivate] = useState<any>(null);
+  const [configJSON, setConfigJSON] = useState<any>(null);
 
-  const retrievePrivateConfig = async (buildID?: number) => {
+  const retrieveConfigJSON = async (buildID?: number) => {
     try {
       await props.service.packrat.cache.addPrivateConfig();
     } catch (error) {
       console.error(error);
-      alertMessage = alertMessageAddPrivateConfig;
+      alertMessage = alertMessageAddConfigJSON;
       setAlert(true);
       throw error;
     }
@@ -64,20 +64,20 @@ const ConfigEditorContainer = (props: any) => {
       const config = await requestAPI<any>(
         "packrat/" + packratID + "/config_private.json"
       );
-      setConfigPrivate(config);
+      setConfigJSON(config);
     } catch (error) {
       console.error(
         `Error - GET /webds/packrat/${packratID}/config_private.json\n${error}`
       );
-      alertMessage = alertMessageGetPrivateConfig;
+      alertMessage = alertMessageGetConfigJSON;
       setAlert(true);
       throw error;
     }
   };
 
-  const _retrievePrivateConfig = async () => {
+  const _retrieveConfigJSON = async () => {
     try {
-      await retrievePrivateConfig(configPrivate.buildID);
+      await retrieveConfigJSON(configJSON.buildID);
     } catch {}
   };
 
@@ -190,7 +190,7 @@ const ConfigEditorContainer = (props: any) => {
   useEffect(() => {
     const initialize = async () => {
       try {
-        await retrievePrivateConfig();
+        await retrieveConfigJSON();
         await readConfig();
       } catch {
         return;
@@ -222,8 +222,8 @@ const ConfigEditorContainer = (props: any) => {
               config={config}
               readConfig={_readConfig}
               writeConfig={_writeConfig}
-              configPrivate={configPrivate}
-              retrievePrivateConfig={_retrievePrivateConfig}
+              configJSON={configJSON}
+              retrieveConfigJSON={_retrieveConfigJSON}
             />
           )}
         </div>

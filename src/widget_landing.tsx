@@ -102,34 +102,38 @@ const findEntry = (obj: any, key: string): any => {
   }
 };
 
-const buildTrees = (configPrivate: any): any => {
-  const dynamicConfigList: any[] = Object.keys(
-    configPrivate.dynamicConfiguration
-  ).map((item: any) => {
-    const entry = configPrivate.dynamicConfiguration[item];
-    return {
-      key: item,
-      ...entry
-    };
-  });
+const buildTrees = (configJSON: any): any => {
+  const dynamicConfigList: any[] = Object.keys(configJSON.dynamicConfiguration)
+    .map((item: any) => {
+      const entry = configJSON.dynamicConfiguration[item];
+      return {
+        key: item,
+        ...entry
+      };
+    })
+    .filter((item: any) => {
+      return !item.key.startsWith("#");
+    });
   dynamicConfigList.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
-  const staticConfigList: any[] = Object.keys(
-    configPrivate.staticConfiguration
-  ).map((item: any) => {
-    const entry = configPrivate.staticConfiguration[item];
-    return {
-      key: item,
-      ...entry
-    };
-  });
+  const staticConfigList: any[] = Object.keys(configJSON.staticConfiguration)
+    .map((item: any) => {
+      const entry = configJSON.staticConfiguration[item];
+      return {
+        key: item,
+        ...entry
+      };
+    })
+    .filter((item: any) => {
+      return !item.key.startsWith("#");
+    });
   staticConfigList.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
   const staticConfigTree: any = {};
   const sections = new Set();
   const categories: any = {};
-  Object.keys(configPrivate.staticConfiguration).forEach((item: any) => {
-    const entry = configPrivate.staticConfiguration[item];
+  Object.keys(configJSON.staticConfiguration).forEach((item: any) => {
+    const entry = configJSON.staticConfiguration[item];
     if (entry.hasOwnProperty("section")) {
       if (!sections.has(entry.section)) {
         sections.add(entry.section);
@@ -225,10 +229,7 @@ export const Landing = (props: any): JSX.Element => {
     setAnchorElL2(event.currentTarget);
   };
 
-  const handleMenuOpenL3 = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    category: string
-  ) => {
+  const handleMenuOpenL3 = (category: string) => {
     staticCategory = category;
     if (_staticSection && staticCategory) {
       staticSection = _staticSection;
@@ -246,7 +247,7 @@ export const Landing = (props: any): JSX.Element => {
     setAnchorElL2(null);
   };
 
-  const handleMenuOpenAll = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMenuOpenAll = () => {
     staticSection = "All";
     _staticSection = undefined;
     staticCategory = undefined;
@@ -303,13 +304,10 @@ export const Landing = (props: any): JSX.Element => {
     }
   };
 
-  const handleListItemClick = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    key: string
-  ) => {
+  const handleListItemClick = (key: string) => {
     updateConfigEntry();
     setConfigKey(key);
-    setConfigData(findEntry(props.configPrivate, key));
+    setConfigData(findEntry(props.configJSON, key));
     setConfigValue(config[key]);
     if (Array.isArray(config[key])) {
       setNumValues(config[key].length);
@@ -330,9 +328,7 @@ export const Landing = (props: any): JSX.Element => {
           key={0}
           dense
           component={ButtonBase}
-          onClick={(event: React.MouseEvent<HTMLButtonElement>) =>
-            handleMenuOpenAll(event)
-          }
+          onClick={() => handleMenuOpenAll()}
           sx={{ width: "100%" }}
         >
           <Typography variant="body2">All</Typography>
@@ -378,9 +374,7 @@ export const Landing = (props: any): JSX.Element => {
                 key={index}
                 dense
                 component={ButtonBase}
-                onClick={(event: React.MouseEvent<HTMLButtonElement>) =>
-                  handleMenuOpenL3(event, item)
-                }
+                onClick={() => handleMenuOpenL3(item)}
                 sx={{ width: "100%" }}
               >
                 <Typography variant="body2">{item}</Typography>
@@ -407,7 +401,7 @@ export const Landing = (props: any): JSX.Element => {
         >
           <ListItem dense divider>
             <ListItemButton
-              onClick={(event) => handleListItemClick(event, item.key)}
+              onClick={() => handleListItemClick(item.key)}
               sx={{ padding: "0px 0px" }}
             >
               <ListItemText primary={item.name.trim()} />
@@ -585,8 +579,8 @@ export const Landing = (props: any): JSX.Element => {
   }, [props.config]);
 
   useEffect(() => {
-    setTrees(buildTrees(props.configPrivate));
-  }, [props.configPrivate]);
+    setTrees(buildTrees(props.configJSON));
+  }, [props.configJSON]);
 
   useEffect(() => {
     staticSection = undefined;
@@ -796,7 +790,7 @@ export const Landing = (props: any): JSX.Element => {
           >
             <Stack spacing={2} direction="row">
               <Button
-                onClick={(event) => {
+                onClick={() => {
                   updateConfigEntry();
                   props.writeConfig(dynamicConfig, staticConfig, true);
                   props.readConfig();
@@ -812,7 +806,7 @@ export const Landing = (props: any): JSX.Element => {
                 Write to Flash
               </Button>
               <Button
-                onClick={(event) => {
+                onClick={() => {
                   updateConfigEntry();
                   props.writeConfig(dynamicConfig, staticConfig, false);
                   props.readConfig();
@@ -831,8 +825,8 @@ export const Landing = (props: any): JSX.Element => {
           </div>
           <Button
             variant="text"
-            onClick={async (event) => {
-              await props.retrievePrivateConfig();
+            onClick={async () => {
+              await props.retrieveConfigJSON();
               await props.readConfig();
               setShowReload(false);
             }}
