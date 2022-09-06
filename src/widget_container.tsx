@@ -204,42 +204,43 @@ const ConfigEditorContainer = (props: any) => {
   const jpFontColor = props.service.ui.getJupyterFontColor();
 
   return (
-    <div className="jp-webds-widget-body">
+    <>
       <ThemeProvider theme={webdsTheme}>
-        {alert ? (
-          <Alert
-            severity="error"
-            onClose={() => setAlert(false)}
-            sx={{ marginBottom: "16px", whiteSpace: "pre-wrap" }}
-          >
-            {alertMessage}
-          </Alert>
-        ) : null}
-        {initialized ? (
-          <Landing
-            fontColor={jpFontColor}
-            config={config}
-            readConfig={_readConfig}
-            writeConfig={_writeConfig}
-            configPrivate={configPrivate}
-            retrievePrivateConfig={_retrievePrivateConfig}
-          />
-        ) : (
-          <>
-            <div
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)"
-              }}
+        <div className="jp-webds-widget-body">
+          {alert && (
+            <Alert
+              severity="error"
+              onClose={() => setAlert(false)}
+              sx={{ whiteSpace: "pre-wrap" }}
             >
-              <CircularProgress color="primary" />
-            </div>
-          </>
+              {alertMessage}
+            </Alert>
+          )}
+          {initialized && (
+            <Landing
+              fontColor={jpFontColor}
+              config={config}
+              readConfig={_readConfig}
+              writeConfig={_writeConfig}
+              configPrivate={configPrivate}
+              retrievePrivateConfig={_retrievePrivateConfig}
+            />
+          )}
+        </div>
+        {!initialized && (
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)"
+            }}
+          >
+            <CircularProgress color="primary" />
+          </div>
         )}
       </ThemeProvider>
-    </div>
+    </>
   );
 };
 
