@@ -28,10 +28,13 @@ const alertMessageCommitConfig = "Failed to write config to flash.";
 
 const alertMessagePackratID = "Failed to read packrat ID from device.";
 
-const alertMessageAddConfigJSON =
+const alertMessageAddPublicConfigJSON =
   "Failed to retrieve config JSON file. Please check in file browser in left sidebar and ensure availability of config JSON file in /Packrat/ directory (e.g. /Packrat/1234567/config.json for PR1234567).";
 
-const alertMessageGetConfigJSON = "Failed to read config JSON data.";
+const alertMessageAddPrivateConfigJSON =
+  "Failed to retrieve config JSON file. Please check in file browser in left sidebar and ensure availability of config JSON file in /Packrat/ directory (e.g. /Packrat/1234567/config_private.json for PR1234567).";
+
+const alertMessageReadConfigJSON = "Failed to read config JSON data.";
 
 const ConfigEditorContainer = (props: any) => {
   const [initialized, setInitialized] = useState<boolean>(false);
@@ -40,11 +43,22 @@ const ConfigEditorContainer = (props: any) => {
   const [configJSON, setConfigJSON] = useState<any>(null);
 
   const retrieveConfigJSON = async (buildID?: number) => {
+    const external = props.service.pinormos
+      .getOSInfo()
+      .current.version.endsWith("E");
     try {
-      await props.service.packrat.cache.addPrivateConfig();
+      if (external) {
+        await props.service.packrat.cache.addPublicConfig();
+      } else {
+        await props.service.packrat.cache.addPrivateConfig();
+      }
     } catch (error) {
       console.error(error);
-      alertMessage = alertMessageAddConfigJSON;
+      if (external) {
+        alertMessage = alertMessageAddPublicConfigJSON;
+      } else {
+        alertMessage = alertMessageAddPrivateConfigJSON;
+      }
       setAlert(true);
       throw error;
     }
@@ -61,15 +75,26 @@ const ConfigEditorContainer = (props: any) => {
       return;
     }
     try {
-      const config = await requestAPI<any>(
-        "packrat/" + packratID + "/config_private.json"
-      );
+      let config: any;
+      if (external) {
+        config = await requestAPI<any>("packrat/" + packratID + "/config.json");
+      } else {
+        config = await requestAPI<any>(
+          "packrat/" + packratID + "/config_private.json"
+        );
+      }
       setConfigJSON(config);
     } catch (error) {
-      console.error(
-        `Error - GET /webds/packrat/${packratID}/config_private.json\n${error}`
-      );
-      alertMessage = alertMessageGetConfigJSON;
+      if (external) {
+        console.error(
+          `Error - GET /webds/packrat/${packratID}/config.json\n${error}`
+        );
+      } else {
+        console.error(
+          `Error - GET /webds/packrat/${packratID}/config_private.json\n${error}`
+        );
+      }
+      alertMessage = alertMessageReadConfigJSON;
       setAlert(true);
       throw error;
     }
