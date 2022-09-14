@@ -43,9 +43,7 @@ const ConfigEditorContainer = (props: any) => {
   const [configJSON, setConfigJSON] = useState<any>(null);
 
   const retrieveConfigJSON = async (buildID?: number) => {
-    const external = props.service.pinormos
-      .getOSInfo()
-      .current.version.endsWith("E");
+    const external = props.service.pinormos.isExternal();
     try {
       if (external) {
         await props.service.packrat.cache.addPublicConfig();
