@@ -7,9 +7,9 @@
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/nilcyttocs/webds_config_editor.git",
+  "homepage": "https://github.com/nilcyttocs/webds_config_editor",
   "bugs": {
-    "url": "https://github.com/nilcyttocs/webds_config_editor.git/issues"
+    "url": "https://github.com/nilcyttocs/webds_config_editor/issues"
   },
   "license": "BSD-3-Clause",
   "author": {
@@ -25,7 +25,7 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nilcyttocs/webds_config_editor.git.git"
+    "url": "https://github.com/nilcyttocs/webds_config_editor.git"
   },
   "scripts": {
     "build": "jlpm build:lib && jlpm build:labextension:dev",
