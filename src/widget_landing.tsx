@@ -321,6 +321,19 @@ export const Landing = (props: any): JSX.Element => {
     }
   };
 
+  const handleWriteToFlashRAMClick = (target: string) => {
+    updateConfigEntry();
+    props.writeConfig(dynamicConfig, staticConfig, target === "toFlash");
+    props.readConfig();
+    snackMessage =
+      target === "toFlash" ? snackMessageWriteToFlash : snackMessageWriteToRAM;
+    setSnackbar(true);
+    setShowReload(false);
+    if (configTab === "static") {
+      props.addStaticConfigUsage(configData.name, target);
+    }
+  };
+
   const generateL1Menu = (): JSX.Element => {
     return (
       <Menu anchorEl={anchorElL1} open={openMenuL1} onClose={handleMenuCloseL1}>
@@ -533,7 +546,7 @@ export const Landing = (props: any): JSX.Element => {
   }, [props.fontColor]);
 
   useEffect(() => {
-    const list = document.getElementById("configKeyList");
+    const list = document.getElementById("webds_config_editor_config_key_list");
     if (list) {
       if (list.clientWidth === BOX_WIDTH) {
         setConfigListWidth(list.clientWidth);
@@ -739,7 +752,10 @@ export const Landing = (props: any): JSX.Element => {
                   {generateL2Menu()}
                 </>
               )}
-              <div id="configKeyList" style={{ flex: 1, overflow: "auto" }}>
+              <div
+                id="webds_config_editor_config_key_list"
+                style={{ flex: 1, overflow: "auto" }}
+              >
                 <List sx={{ width: configListWidth + "px" }}>
                   {generateListItems()}
                 </List>
@@ -791,12 +807,7 @@ export const Landing = (props: any): JSX.Element => {
             <Stack spacing={2} direction="row">
               <Button
                 onClick={() => {
-                  updateConfigEntry();
-                  props.writeConfig(dynamicConfig, staticConfig, true);
-                  props.readConfig();
-                  snackMessage = snackMessageWriteToFlash;
-                  setSnackbar(true);
-                  setShowReload(false);
+                  handleWriteToFlashRAMClick("toFlash");
                 }}
                 sx={{
                   width: "150px",
@@ -807,12 +818,7 @@ export const Landing = (props: any): JSX.Element => {
               </Button>
               <Button
                 onClick={() => {
-                  updateConfigEntry();
-                  props.writeConfig(dynamicConfig, staticConfig, false);
-                  props.readConfig();
-                  snackMessage = snackMessageWriteToRAM;
-                  setSnackbar(true);
-                  setShowReload(false);
+                  handleWriteToFlashRAMClick("toRAM");
                 }}
                 sx={{
                   width: "150px",

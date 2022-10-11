@@ -225,6 +225,7 @@ const ConfigEditorContainer = (props: any) => {
 
   const webdsTheme = props.service.ui.getWebDSTheme();
   const jpFontColor = props.service.ui.getJupyterFontColor();
+  const addStaticConfigUsage = props.service.analytics.addStaticConfigUsage;
 
   return (
     <>
@@ -242,6 +243,7 @@ const ConfigEditorContainer = (props: any) => {
           {initialized && (
             <Landing
               fontColor={jpFontColor}
+              addStaticConfigUsage={addStaticConfigUsage}
               config={config}
               readConfig={_readConfig}
               writeConfig={_writeConfig}
