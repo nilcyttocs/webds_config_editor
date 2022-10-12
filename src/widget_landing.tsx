@@ -53,7 +53,7 @@ let staticSection: string | undefined;
 let _staticSection: string | undefined;
 let staticCategory: string | undefined;
 
-const modifiedSet = new Set();
+const modifiedSet = new Set<string>();
 
 const TabsList = styled(TabsListUnstyled)`
   background-color: "transparent";
@@ -337,9 +337,9 @@ export const Landing = (props: any): JSX.Element => {
       target === "toFlash" ? snackMessageWriteToFlash : snackMessageWriteToRAM;
     setSnackbar(true);
     setShowReload(false);
-    for (const item of modifiedSet) {
+    modifiedSet.forEach((item) => {
       props.addStaticConfigUsage(item, target);
-    }
+    });
     modifiedSet.clear();
   };
 
