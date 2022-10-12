@@ -53,6 +53,8 @@ let staticSection: string | undefined;
 let _staticSection: string | undefined;
 let staticCategory: string | undefined;
 
+const modifiedSet = new Set();
+
 const TabsList = styled(TabsListUnstyled)`
   background-color: "transparent";
   display: flex;
@@ -300,7 +302,13 @@ export const Landing = (props: any): JSX.Element => {
     if (configTab === "dynamic") {
       setShowReload(!(numberEntry === props.config.dynamic[configKey]));
     } else {
-      setShowReload(!(numberEntry === props.config.static[configKey]));
+      const modified = !(numberEntry === props.config.static[configKey]);
+      setShowReload(modified);
+      if (modified) {
+        modifiedSet.add(configData.name);
+      } else {
+        modifiedSet.delete(configData.name);
+      }
     }
   };
 
@@ -329,9 +337,10 @@ export const Landing = (props: any): JSX.Element => {
       target === "toFlash" ? snackMessageWriteToFlash : snackMessageWriteToRAM;
     setSnackbar(true);
     setShowReload(false);
-    if (configTab === "static") {
-      props.addStaticConfigUsage(configData.name, target);
+    for (const item of modifiedSet) {
+      props.addStaticConfigUsage(item, target);
     }
+    modifiedSet.clear();
   };
 
   const generateL1Menu = (): JSX.Element => {
@@ -459,6 +468,7 @@ export const Landing = (props: any): JSX.Element => {
                         setConfigValue(props.config.dynamic[configKey]);
                       } else {
                         setConfigValue(props.config.static[configKey]);
+                        modifiedSet.delete(configData.name);
                       }
                       setShowReload(false);
                     }}
@@ -599,6 +609,9 @@ export const Landing = (props: any): JSX.Element => {
     staticSection = undefined;
     _staticSection = undefined;
     staticCategory = undefined;
+    return () => {
+      modifiedSet.clear();
+    };
   }, []);
 
   return (
@@ -835,6 +848,7 @@ export const Landing = (props: any): JSX.Element => {
               await props.retrieveConfigJSON();
               await props.readConfig();
               setShowReload(false);
+              modifiedSet.clear();
             }}
             sx={{
               position: "absolute",
