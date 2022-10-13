@@ -12,7 +12,7 @@ import { WebDSService, WebDSWidget } from "@webds/service";
 
 import { configEditorIcon } from "./icons";
 
-import { ConfigEditorWidget } from "./widget_container";
+import ConfigEditorWidget from "./widget/ConfigEditorWidget";
 
 namespace Attributes {
   export const command = "webds_config_editor:open";
