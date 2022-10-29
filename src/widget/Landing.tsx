@@ -8,7 +8,7 @@ import ButtonBase from "@mui/material/ButtonBase";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 
-import { styled } from "@mui/system";
+import { styled, useTheme } from "@mui/material/styles";
 import TabsUnstyled from "@mui/base/TabsUnstyled";
 import TabsListUnstyled from "@mui/base/TabsListUnstyled";
 import TabUnstyled, { tabUnstyledClasses } from "@mui/base/TabUnstyled";
@@ -200,6 +200,8 @@ export const Landing = (props: any): JSX.Element => {
   const [showReload, setShowReload] = useState<boolean>(false);
   const [dynamicConfig, setDynamicConfig] = useState<any>({});
   const [staticConfig, setStaticConfig] = useState<any>({});
+
+  const theme = useTheme();
 
   const openMenuL1 = Boolean(anchorElL1);
   const openMenuL2 = Boolean(anchorElL2);
@@ -552,8 +554,8 @@ export const Landing = (props: any): JSX.Element => {
   };
 
   useEffect(() => {
-    createTab(props.fontColor);
-  }, [props.fontColor]);
+    createTab(theme.palette.text.primary);
+  }, [theme]);
 
   useEffect(() => {
     const list = document.getElementById("webds_config_editor_config_key_list");
@@ -630,7 +632,7 @@ export const Landing = (props: any): JSX.Element => {
           sx={{
             minWidth: WIDTH + "px",
             height: HEIGHT_TITLE + "px",
-            bgcolor: "section.main"
+            bgcolor: "section.background"
           }}
         >
           <div
@@ -661,12 +663,7 @@ export const Landing = (props: any): JSX.Element => {
                   transform: "translate(0%, -50%)"
                 }}
               >
-                <Typography
-                  variant="body2"
-                  sx={{ textDecoration: "underline" }}
-                >
-                  Help
-                </Typography>
+                <Typography variant="underline">Help</Typography>
               </Button>
             )}
           </div>
@@ -678,7 +675,7 @@ export const Landing = (props: any): JSX.Element => {
             boxSizing: "border-box",
             padding: "24px",
             position: "relative",
-            bgcolor: "section.main"
+            bgcolor: "section.background"
           }}
         >
           <TabsUnstyled defaultValue={0} onChange={handleTabChange}>
@@ -802,7 +799,7 @@ export const Landing = (props: any): JSX.Element => {
             minWidth: WIDTH + "px",
             minHeight: HEIGHT_CONTROLS + "px",
             position: "relative",
-            bgcolor: "section.main"
+            bgcolor: "section.background"
           }}
         >
           <div
@@ -857,9 +854,7 @@ export const Landing = (props: any): JSX.Element => {
               transform: "translate(0%, -50%)"
             }}
           >
-            <Typography variant="body2" sx={{ textDecoration: "underline" }}>
-              Reload from RAM
-            </Typography>
+            <Typography variant="underline">Reload from RAM</Typography>
           </Button>
         </Box>
       </Stack>
