@@ -32,12 +32,12 @@ import Tooltip from "@mui/material/Tooltip";
 import Snackbar from "@mui/material/Snackbar";
 import Typography from "@mui/material/Typography";
 
+import { MIN_WIDTH } from "./constants";
+
 import { Canvas } from "./mui_extensions/Canvas";
 import { Content } from "./mui_extensions/Content";
 import { Controls } from "./mui_extensions/Controls";
 import { CANVAS_ATTRS } from "./mui_extensions/constants";
-
-const MIN_WIDTH = 1000;
 
 const PANEL_WIDTH = (MIN_WIDTH - CANVAS_ATTRS.PADDING * 2) / 2 - 2 - 8 - 16;
 const PANEL_HEIGHT = 450;
