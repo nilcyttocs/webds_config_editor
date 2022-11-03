@@ -32,14 +32,15 @@ import Tooltip from "@mui/material/Tooltip";
 import Snackbar from "@mui/material/Snackbar";
 import Typography from "@mui/material/Typography";
 
-const WIDTH = 1000;
-const HEIGHT_TITLE = 70;
-const HEIGHT_CONTENT = 450;
-const HEIGHT_CONTROLS = 120;
+import { Canvas } from "./mui_extensions/Canvas";
+import { Content } from "./mui_extensions/Content";
+import { Controls } from "./mui_extensions/Controls";
+import { CANVAS_ATTRS } from "./mui_extensions/constants";
 
-const BOX_WIDTH = (WIDTH - 48 - 2 - 16) / 2 - 16;
+const MIN_WIDTH = 1000;
 
-const showHelp = false;
+const PANEL_WIDTH = (MIN_WIDTH - CANVAS_ATTRS.PADDING * 2) / 2 - 2 - 8 - 16;
+const PANEL_HEIGHT = 450;
 
 let alertMessage = "";
 
@@ -64,12 +65,12 @@ const TabsList = styled(TabsListUnstyled)`
 
 let Tab: any;
 
-const createTab = (fontColor: string) => {
+const createTab = (fontColor: string, borderColor: string) => {
   Tab = styled(TabUnstyled)`
     font-family: Arial;
     color: ${fontColor};
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 400;
     background-color: transparent;
     width: 150px;
@@ -77,6 +78,7 @@ const createTab = (fontColor: string) => {
     border-style: solid;
     border-width: 1px;
     border-radius: 4px;
+    border-color: ${borderColor};
     display: flex;
     justify-content: center;
     &.${tabUnstyledClasses.selected} {
@@ -86,7 +88,7 @@ const createTab = (fontColor: string) => {
   `;
 };
 
-createTab("primary");
+createTab("", "");
 
 const findEntry = (obj: any, key: string): any => {
   let result: any;
@@ -186,7 +188,7 @@ export const Landing = (props: any): JSX.Element => {
   const [snackbar, setSnackbar] = useState<boolean>(false);
   const [anchorElL1, setAnchorElL1] = React.useState<null | HTMLElement>(null);
   const [anchorElL2, setAnchorElL2] = React.useState<null | HTMLElement>(null);
-  const [configListWidth, setConfigListWidth] = useState<number>(BOX_WIDTH);
+  const [configListWidth, setConfigListWidth] = useState<number>(PANEL_WIDTH);
   const [configTab, setConfigTab] = useState<string>("dynamic");
   const [section, setSection] = useState<string>("");
   const [search, setSearch] = useState<string>("");
@@ -484,7 +486,7 @@ export const Landing = (props: any): JSX.Element => {
             <FormControl
               variant="outlined"
               size="small"
-              sx={{ width: "100%", minWidth: BOX_WIDTH + "px" }}
+              sx={{ width: "100%", minWidth: PANEL_WIDTH + "px" }}
             >
               <OutlinedInput
                 value={configValue}
@@ -554,13 +556,13 @@ export const Landing = (props: any): JSX.Element => {
   };
 
   useEffect(() => {
-    createTab(theme.palette.text.primary);
+    createTab(theme.palette.text.primary, theme.palette.divider);
   }, [theme]);
 
   useEffect(() => {
     const list = document.getElementById("webds_config_editor_config_key_list");
     if (list) {
-      if (list.clientWidth === BOX_WIDTH) {
+      if (list.clientWidth === PANEL_WIDTH) {
         setConfigListWidth(list.clientWidth);
       } else {
         setConfigListWidth(list.clientWidth - 8);
@@ -619,65 +621,12 @@ export const Landing = (props: any): JSX.Element => {
   return (
     <>
       {alert ? (
-        <Alert
-          severity="error"
-          onClose={() => setAlert(false)}
-          sx={{ marginBottom: "16px" }}
-        >
+        <Alert severity="error" onClose={() => setAlert(false)}>
           {alertMessage}
         </Alert>
       ) : null}
-      <Stack spacing={2}>
-        <Box
-          sx={{
-            minWidth: WIDTH + "px",
-            height: HEIGHT_TITLE + "px",
-            bgcolor: "section.background"
-          }}
-        >
-          <div
-            style={{
-              width: WIDTH + "px",
-              height: HEIGHT_TITLE + "px",
-              position: "relative"
-            }}
-          >
-            <Typography
-              variant="h5"
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)"
-              }}
-            >
-              Configuration Editor
-            </Typography>
-            {showHelp && (
-              <Button
-                variant="text"
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "16px",
-                  transform: "translate(0%, -50%)"
-                }}
-              >
-                <Typography variant="underline">Help</Typography>
-              </Button>
-            )}
-          </div>
-        </Box>
-        <Box
-          sx={{
-            minWidth: WIDTH + "px",
-            minHeight: HEIGHT_CONTENT + "px",
-            boxSizing: "border-box",
-            padding: "24px",
-            position: "relative",
-            bgcolor: "section.background"
-          }}
-        >
+      <Canvas title="Configuration Editor" minWidth={MIN_WIDTH}>
+        <Content>
           <TabsUnstyled defaultValue={0} onChange={handleTabChange}>
             <TabsList>
               <Tab sx={{ paddingTop: "5px" }}>Dynamic Config</Tab>
@@ -698,21 +647,19 @@ export const Landing = (props: any): JSX.Element => {
           </div>
           <Box
             sx={{
-              width: "100%",
-              height: HEIGHT_CONTENT + "px",
-              boxSizing: "border-box",
               padding: "8px",
+              boxSizing: "border-box",
               display: "flex",
               flexFlow: "row",
               border: 1,
               borderRadius: 1,
-              borderColor: "grey.500"
+              borderColor: "divider"
             }}
           >
             <Box
               sx={{
-                width: BOX_WIDTH + "px",
-                height: HEIGHT_CONTENT - 2 - 16 + "px",
+                width: PANEL_WIDTH + "px",
+                height: PANEL_HEIGHT + "px",
                 display: "flex",
                 flexFlow: "column"
               }}
@@ -774,7 +721,7 @@ export const Landing = (props: any): JSX.Element => {
             <Divider
               orientation="vertical"
               sx={{
-                height: HEIGHT_CONTENT - 2 - 16 + "px",
+                height: PANEL_HEIGHT + "px",
                 marginLeft: "16px",
                 marginRight: "16px"
               }}
@@ -782,8 +729,7 @@ export const Landing = (props: any): JSX.Element => {
             <Box
               sx={{
                 flex: 1,
-                height: HEIGHT_CONTENT - 2 - 16 + "px",
-
+                height: PANEL_HEIGHT + "px",
                 display: "flex",
                 flexFlow: "column"
               }}
@@ -793,21 +739,15 @@ export const Landing = (props: any): JSX.Element => {
               </div>
             </Box>
           </Box>
-        </Box>
-        <Box
-          sx={{
-            minWidth: WIDTH + "px",
-            minHeight: HEIGHT_CONTROLS + "px",
-            position: "relative",
-            bgcolor: "section.background"
-          }}
-        >
+        </Content>
+        <Controls>
           <div
             style={{
-              width: WIDTH + "px",
-              minHeight: HEIGHT_CONTROLS + "px",
-              boxSizing: "border-box",
-              padding: "24px",
+              width: MIN_WIDTH - CANVAS_ATTRS.PADDING * 2 + "px",
+              minHeight:
+                CANVAS_ATTRS.MIN_HEIGHT_CONTROLS -
+                CANVAS_ATTRS.PADDING * 2 +
+                "px",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -819,10 +759,7 @@ export const Landing = (props: any): JSX.Element => {
                 onClick={() => {
                   handleWriteToFlashRAMClick("toFlash");
                 }}
-                sx={{
-                  width: "150px",
-                  textTransform: "none"
-                }}
+                sx={{ width: "150px" }}
               >
                 Write to Flash
               </Button>
@@ -830,10 +767,7 @@ export const Landing = (props: any): JSX.Element => {
                 onClick={() => {
                   handleWriteToFlashRAMClick("toRAM");
                 }}
-                sx={{
-                  width: "150px",
-                  textTransform: "none"
-                }}
+                sx={{ width: "150px" }}
               >
                 Write to RAM
               </Button>
@@ -856,8 +790,8 @@ export const Landing = (props: any): JSX.Element => {
           >
             <Typography variant="underline">Reload from RAM</Typography>
           </Button>
-        </Box>
-      </Stack>
+        </Controls>
+      </Canvas>
       <Snackbar
         open={snackbar}
         autoHideDuration={3000}

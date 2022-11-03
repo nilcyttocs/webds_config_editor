@@ -225,7 +225,17 @@ export const ConfigEditorComponent = (props: any) => {
   return (
     <>
       <ThemeProvider theme={webdsTheme}>
-        <div className="jp-webds-widget-body">
+        <div
+          className="jp-webds-widget-body"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "24px",
+            right: "24px",
+            transform: "translate(0%, -50%)",
+            whiteSpace: "nowrap"
+          }}
+        >
           {alert && (
             <Alert
               severity="error"
