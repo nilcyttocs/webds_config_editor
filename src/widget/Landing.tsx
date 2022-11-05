@@ -67,7 +67,7 @@ let Tab: any;
 
 const createTab = (fontColor: string, borderColor: string) => {
   Tab = styled(TabUnstyled)`
-    font-family: Arial;
+    font-family: inherit;
     color: ${fontColor};
     cursor: pointer;
     font-size: 0.875rem;
