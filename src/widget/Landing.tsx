@@ -309,9 +309,9 @@ export const Landing = (props: any): JSX.Element => {
       const modified = !(numberEntry === props.config.static[configKey]);
       setShowReload(modified);
       if (modified) {
-        modifiedSet.add(configData.name);
+        modifiedSet.add(configKey);
       } else {
-        modifiedSet.delete(configData.name);
+        modifiedSet.delete(configKey);
       }
     }
   };
@@ -472,7 +472,7 @@ export const Landing = (props: any): JSX.Element => {
                         setConfigValue(props.config.dynamic[configKey]);
                       } else {
                         setConfigValue(props.config.static[configKey]);
-                        modifiedSet.delete(configData.name);
+                        modifiedSet.delete(configKey);
                       }
                       setShowReload(false);
                     }}
