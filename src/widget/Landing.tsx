@@ -757,19 +757,19 @@ export const Landing = (props: any): JSX.Element => {
             <Stack spacing={2} direction="row">
               <Button
                 onClick={() => {
-                  handleWriteToFlashRAMClick("toFlash");
-                }}
-                sx={{ width: "150px" }}
-              >
-                Write to Flash
-              </Button>
-              <Button
-                onClick={() => {
                   handleWriteToFlashRAMClick("toRAM");
                 }}
                 sx={{ width: "150px" }}
               >
                 Write to RAM
+              </Button>
+              <Button
+                onClick={() => {
+                  handleWriteToFlashRAMClick("toFlash");
+                }}
+                sx={{ width: "150px" }}
+              >
+                Write to Flash
               </Button>
             </Stack>
           </div>
