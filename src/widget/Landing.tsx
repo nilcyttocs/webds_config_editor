@@ -625,7 +625,7 @@ export const Landing = (props: any): JSX.Element => {
           {alertMessage}
         </Alert>
       ) : null}
-      <Canvas title="Configuration Editor" minWidth={MIN_WIDTH}>
+      <Canvas title="Configuration Editor" minWidth={MIN_WIDTH} stretch>
         <Content>
           <TabsUnstyled defaultValue={0} onChange={handleTabChange}>
             <TabsList>
