@@ -19,7 +19,7 @@ export class ConfigEditorWidget extends ReactWidget {
   render(): JSX.Element {
     return (
       <div id={this.id + "_component"}>
-          <ConfigEditorComponent service={this.service} />
+        <ConfigEditorComponent service={this.service} />
       </div>
     );
   }
