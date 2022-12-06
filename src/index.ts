@@ -38,8 +38,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
   ) => {
     console.log("JupyterLab extension @webds/config_editor is activated!");
 
-    await service.initialized;
-
     let widget: WebDSWidget;
     const { commands, shell } = app;
     const command = Attributes.command;
