@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import Alert from "@mui/material/Alert";
-
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import ButtonBase from "@mui/material/ButtonBase";
@@ -32,7 +30,12 @@ import Tooltip from "@mui/material/Tooltip";
 import Snackbar from "@mui/material/Snackbar";
 import Typography from "@mui/material/Typography";
 
-import { MIN_WIDTH } from "./constants";
+import {
+  MIN_WIDTH,
+  PANEL_HEIGHT,
+  SNACK_MESSAGE_WRITE_TO_RAM,
+  SNACK_MESSAGE_WRITE_TO_FLASH
+} from "./constants";
 
 import { Canvas } from "./mui_extensions/Canvas";
 import { Content } from "./mui_extensions/Content";
@@ -40,15 +43,8 @@ import { Controls } from "./mui_extensions/Controls";
 import { CANVAS_ATTRS } from "./mui_extensions/constants";
 
 const PANEL_WIDTH = (MIN_WIDTH - CANVAS_ATTRS.PADDING * 2) / 2 - 2 - 8 - 16;
-const PANEL_HEIGHT = 450;
-
-let alertMessage = "";
 
 let snackMessage = "";
-
-const snackMessageWriteToRAM = "Configuration written to RAM.";
-
-const snackMessageWriteToFlash = "Configuration written to Flash.";
 
 let staticSection: string | undefined;
 let _staticSection: string | undefined;
@@ -184,7 +180,6 @@ const stringEntry2NumberEntry = (entry: string): number[] | number | null => {
 };
 
 export const Landing = (props: any): JSX.Element => {
-  const [alert, setAlert] = useState<boolean>(false);
   const [snackbar, setSnackbar] = useState<boolean>(false);
   const [anchorElL1, setAnchorElL1] = React.useState<null | HTMLElement>(null);
   const [anchorElL2, setAnchorElL2] = React.useState<null | HTMLElement>(null);
@@ -338,7 +333,9 @@ export const Landing = (props: any): JSX.Element => {
     props.writeConfig(dynamicConfig, staticConfig, target === "toFlash");
     props.readConfig();
     snackMessage =
-      target === "toFlash" ? snackMessageWriteToFlash : snackMessageWriteToRAM;
+      target === "toFlash"
+        ? SNACK_MESSAGE_WRITE_TO_FLASH
+        : SNACK_MESSAGE_WRITE_TO_RAM;
     setSnackbar(true);
     setShowReload(false);
     modifiedSet.forEach((item) => {
@@ -620,11 +617,6 @@ export const Landing = (props: any): JSX.Element => {
 
   return (
     <>
-      {alert ? (
-        <Alert severity="error" onClose={() => setAlert(false)}>
-          {alertMessage}
-        </Alert>
-      ) : null}
       <Canvas title="Configuration Editor" minWidth={MIN_WIDTH} stretch>
         <Content>
           <TabsUnstyled defaultValue={0} onChange={handleTabChange}>

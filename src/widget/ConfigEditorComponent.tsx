@@ -8,35 +8,32 @@ import { ThemeProvider } from "@mui/material/styles";
 
 import Landing from "./Landing";
 
+import {
+  ALERT_MESSAGE_READ_DYNAMIC,
+  ALERT_MESSAGE_WRITE_DYNAMIC,
+  ALERT_MESSAGE_READ_STATIC,
+  ALERT_MESSAGE_WRITE_STATIC,
+  ALERT_MESSAGE_COMMIT_CONFIG,
+  ALERT_MESSAGE_PACKRAT_ID,
+  ALERT_MESSAGE_ADD_PUBLIC_CONFIG_JSON,
+  ALERT_MESSAGE_ADD_PRIVATE_CONFIG_JSON,
+  ALERT_MESSAGE_READ_CONFIG_JSON
+} from "./constants";
+
 import { requestAPI } from "../handler";
 
 let alertMessage = "";
-
-const alertMessageReadDynamic = "Failed to read dynamic config from device.";
-
-const alertMessageWriteDynamic = "Failed to write dynamic config to device.";
-
-const alertMessageReadStatic = "Failed to read static config from device.";
-
-const alertMessageWriteStatic = "Failed to write static config to device.";
-
-const alertMessageCommitConfig = "Failed to write config to flash.";
-
-const alertMessagePackratID = "Failed to read packrat ID from device.";
-
-const alertMessageAddPublicConfigJSON =
-  "Failed to retrieve config JSON file. Please check in file browser in left sidebar and ensure availability of config JSON file in /Packrat/ directory (e.g. /Packrat/1234567/config.json for PR1234567).";
-
-const alertMessageAddPrivateConfigJSON =
-  "Failed to retrieve config JSON file. Please check in file browser in left sidebar and ensure availability of config JSON file in /Packrat/ directory (e.g. /Packrat/1234567/config_private.json for PR1234567).";
-
-const alertMessageReadConfigJSON = "Failed to read config JSON data.";
 
 export const ConfigEditorComponent = (props: any) => {
   const [initialized, setInitialized] = useState<boolean>(false);
   const [alert, setAlert] = useState<boolean>(false);
   const [config, setConfig] = useState<any>(null);
   const [configJSON, setConfigJSON] = useState<any>(null);
+
+  const showAlert = (message: string) => {
+    alertMessage = message;
+    setAlert(true);
+  };
 
   const retrieveConfigJSON = async (buildID?: number) => {
     const external = props.service.pinormos.isExternal();
@@ -49,11 +46,10 @@ export const ConfigEditorComponent = (props: any) => {
     } catch (error) {
       console.error(error);
       if (external) {
-        alertMessage = alertMessageAddPublicConfigJSON;
+        showAlert(ALERT_MESSAGE_ADD_PUBLIC_CONFIG_JSON);
       } else {
-        alertMessage = alertMessageAddPrivateConfigJSON;
+        showAlert(ALERT_MESSAGE_ADD_PRIVATE_CONFIG_JSON);
       }
-      setAlert(true);
       throw error;
     }
     let packratID: number;
@@ -61,8 +57,7 @@ export const ConfigEditorComponent = (props: any) => {
       packratID = await props.service.touchcomm.getPackratID();
     } catch (error) {
       console.error(error);
-      alertMessage = alertMessagePackratID;
-      setAlert(true);
+      showAlert(ALERT_MESSAGE_PACKRAT_ID);
       throw error;
     }
     if (buildID && buildID === packratID) {
@@ -88,8 +83,7 @@ export const ConfigEditorComponent = (props: any) => {
           `Error - GET /webds/packrat/${packratID}/config_private.json\n${error}`
         );
       }
-      alertMessage = alertMessageReadConfigJSON;
-      setAlert(true);
+      showAlert(ALERT_MESSAGE_READ_CONFIG_JSON);
       throw error;
     }
   };
@@ -113,8 +107,7 @@ export const ConfigEditorComponent = (props: any) => {
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
-      alertMessage = alertMessageReadDynamic;
-      setAlert(true);
+      showAlert(ALERT_MESSAGE_READ_DYNAMIC);
       throw error;
     }
     dataToSend = {
@@ -127,8 +120,7 @@ export const ConfigEditorComponent = (props: any) => {
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
-      alertMessage = alertMessageReadStatic;
-      setAlert(true);
+      showAlert(ALERT_MESSAGE_READ_STATIC);
       throw error;
     }
     setConfig({
@@ -159,8 +151,7 @@ export const ConfigEditorComponent = (props: any) => {
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
-      alertMessage = alertMessageWriteDynamic;
-      setAlert(true);
+      showAlert(ALERT_MESSAGE_WRITE_DYNAMIC);
       throw error;
     }
     dataToSend = {
@@ -174,8 +165,7 @@ export const ConfigEditorComponent = (props: any) => {
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
-      alertMessage = alertMessageWriteStatic;
-      setAlert(true);
+      showAlert(ALERT_MESSAGE_WRITE_STATIC);
       throw error;
     }
     if (commit) {
@@ -189,8 +179,7 @@ export const ConfigEditorComponent = (props: any) => {
         });
       } catch (error) {
         console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
-        alertMessage = alertMessageCommitConfig;
-        setAlert(true);
+        showAlert(ALERT_MESSAGE_COMMIT_CONFIG);
         throw error;
       }
     }
