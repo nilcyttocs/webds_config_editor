@@ -329,19 +329,23 @@ export const Landing = (props: any): JSX.Element => {
   };
 
   const handleWriteToFlashRAMClick = (target: string) => {
-    updateConfigEntry();
-    props.writeConfig(dynamicConfig, staticConfig, target === "toFlash");
-    props.readConfig();
-    snackMessage =
-      target === "toFlash"
-        ? SNACK_MESSAGE_WRITE_TO_FLASH
-        : SNACK_MESSAGE_WRITE_TO_RAM;
-    setSnackbar(true);
-    setShowReload(false);
-    modifiedSet.forEach((item) => {
-      props.addStaticConfigUsage(item, target);
-    });
-    modifiedSet.clear();
+    try {
+      updateConfigEntry();
+      props.writeConfig(dynamicConfig, staticConfig, target === "toFlash");
+      props.readConfig();
+      snackMessage =
+        target === "toFlash"
+          ? SNACK_MESSAGE_WRITE_TO_FLASH
+          : SNACK_MESSAGE_WRITE_TO_RAM;
+      setSnackbar(true);
+      setShowReload(false);
+      modifiedSet.forEach((item) => {
+        props.addStaticConfigUsage(item, target);
+      });
+      modifiedSet.clear();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const generateL1Menu = (): JSX.Element => {
