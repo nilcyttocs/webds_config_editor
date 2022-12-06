@@ -30,7 +30,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
   id: "@webds/config_editor:plugin",
   autoStart: true,
   requires: [ILauncher, ILayoutRestorer, WebDSService],
-  activate: async (
+  activate: (
     app: JupyterFrontEnd,
     launcher: ILauncher,
     restorer: ILayoutRestorer,
