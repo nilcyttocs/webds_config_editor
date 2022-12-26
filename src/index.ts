@@ -23,6 +23,8 @@ namespace Attributes {
   export const rank = 10;
 }
 
+export let webdsService: WebDSService;
+
 /**
  * Initialization data for the @webds/config_editor extension.
  */
@@ -38,6 +40,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
   ) => {
     console.log("JupyterLab extension @webds/config_editor is activated!");
 
+    webdsService = service;
+
     let widget: WebDSWidget;
     const { commands, shell } = app;
     const command = Attributes.command;
@@ -49,7 +53,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       },
       execute: () => {
         if (!widget || widget.isDisposed) {
-          const content = new ConfigEditorWidget(Attributes.id, service);
+          const content = new ConfigEditorWidget(Attributes.id);
           widget = new WebDSWidget<ConfigEditorWidget>({ content });
           widget.id = Attributes.id;
           widget.title.label = Attributes.label;
