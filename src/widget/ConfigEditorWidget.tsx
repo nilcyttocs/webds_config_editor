@@ -6,6 +6,8 @@ import { WebDSService } from "@webds/service";
 
 import ConfigEditorComponent from "./ConfigEditorComponent";
 
+export let webdsService: WebDSService;
+
 export class ConfigEditorWidget extends ReactWidget {
   id: string;
   service: WebDSService;
@@ -17,9 +19,10 @@ export class ConfigEditorWidget extends ReactWidget {
   }
 
   render(): JSX.Element {
+    webdsService = this.service;
     return (
       <div id={this.id + "_component"}>
-        <ConfigEditorComponent service={this.service} />
+        <ConfigEditorComponent />
       </div>
     );
   }

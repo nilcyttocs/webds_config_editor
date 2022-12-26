@@ -8,6 +8,8 @@ import { ThemeProvider } from "@mui/material/styles";
 
 import Landing from "./Landing";
 
+import { webdsService } from "./local_exports";
+
 import {
   ALERT_MESSAGE_READ_DYNAMIC,
   ALERT_MESSAGE_WRITE_DYNAMIC,
@@ -30,18 +32,21 @@ export const ConfigEditorComponent = (props: any) => {
   const [config, setConfig] = useState<any>(null);
   const [configJSON, setConfigJSON] = useState<any>(null);
 
+  const webdsTheme = webdsService.ui.getWebDSTheme();
+  const addStaticConfigUsage = webdsService.analytics.addStaticConfigUsage;
+
   const showAlert = (message: string) => {
     alertMessage = message;
     setAlert(true);
   };
 
   const retrieveConfigJSON = async (buildID?: number) => {
-    const external = props.service.pinormos.isExternal();
+    const external = webdsService.pinormos.isExternal();
     try {
       if (external) {
-        await props.service.packrat.cache.addPublicConfig();
+        await webdsService.packrat.cache.addPublicConfig();
       } else {
-        await props.service.packrat.cache.addPrivateConfig();
+        await webdsService.packrat.cache.addPrivateConfig();
       }
     } catch (error) {
       console.error(error);
@@ -54,7 +59,7 @@ export const ConfigEditorComponent = (props: any) => {
     }
     let packratID: number;
     try {
-      packratID = await props.service.touchcomm.getPackratID();
+      packratID = await webdsService.touchcomm.getPackratID();
     } catch (error) {
       console.error(error);
       showAlert(ALERT_MESSAGE_PACKRAT_ID);
@@ -207,9 +212,6 @@ export const ConfigEditorComponent = (props: any) => {
     };
     initialize();
   }, []);
-
-  const webdsTheme = props.service.ui.getWebDSTheme();
-  const addStaticConfigUsage = props.service.analytics.addStaticConfigUsage;
 
   return (
     <>
