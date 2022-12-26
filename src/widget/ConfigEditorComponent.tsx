@@ -8,7 +8,7 @@ import { ThemeProvider } from "@mui/material/styles";
 
 import Landing from "./Landing";
 
-import { webdsService } from "./local_exports";
+import { requestAPI, webdsService } from "./local_exports";
 
 import {
   ALERT_MESSAGE_READ_DYNAMIC,
@@ -21,8 +21,6 @@ import {
   ALERT_MESSAGE_ADD_PRIVATE_CONFIG_JSON,
   ALERT_MESSAGE_READ_CONFIG_JSON
 } from "./constants";
-
-import { requestAPI } from "../handler";
 
 let alertMessage = "";
 

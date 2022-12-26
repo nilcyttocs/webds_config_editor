@@ -1,1 +1,3 @@
-export { webdsService } from "./widget/ConfigEditorWidget";
+export { webdsService } from "./index";
+
+export { requestAPI } from "./handler";
