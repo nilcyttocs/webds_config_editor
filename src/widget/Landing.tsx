@@ -1,50 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import ButtonBase from "@mui/material/ButtonBase";
-import Stack from "@mui/material/Stack";
-import Divider from "@mui/material/Divider";
-
-import { styled, useTheme } from "@mui/material/styles";
-import TabsUnstyled from "@mui/base/TabsUnstyled";
-import TabsListUnstyled from "@mui/base/TabsListUnstyled";
-import TabUnstyled, { tabUnstyledClasses } from "@mui/base/TabUnstyled";
-
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-
-import FormControl from "@mui/material/FormControl";
-import OutlinedInput from "@mui/material/OutlinedInput";
-
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemButton from "@mui/material/ListItemButton";
-
-import IconButton from "@mui/material/IconButton";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-
-import Tooltip from "@mui/material/Tooltip";
-import Snackbar from "@mui/material/Snackbar";
-import Typography from "@mui/material/Typography";
+import TabsListUnstyled from '@mui/base/TabsListUnstyled';
+import TabsUnstyled from '@mui/base/TabsUnstyled';
+import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import ButtonBase from '@mui/material/ButtonBase';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Snackbar from '@mui/material/Snackbar';
+import Stack from '@mui/material/Stack';
+import { styled, useTheme } from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
 import {
   MIN_WIDTH,
   PANEL_HEIGHT,
-  SNACK_MESSAGE_WRITE_TO_RAM,
-  SNACK_MESSAGE_WRITE_TO_FLASH
-} from "./constants";
-
-import { Canvas } from "./mui_extensions/Canvas";
-import { Content } from "./mui_extensions/Content";
-import { Controls } from "./mui_extensions/Controls";
-import { CANVAS_ATTRS } from "./mui_extensions/constants";
+  SNACK_MESSAGE_WRITE_TO_FLASH,
+  SNACK_MESSAGE_WRITE_TO_RAM
+} from './constants';
+import { Canvas } from './mui_extensions/Canvas';
+import { CANVAS_ATTRS } from './mui_extensions/constants';
+import { Content } from './mui_extensions/Content';
+import { Controls } from './mui_extensions/Controls';
 
 const PANEL_WIDTH = (MIN_WIDTH - CANVAS_ATTRS.PADDING * 2) / 2 - 2 - 8 - 16;
 
-let snackMessage = "";
+let snackMessage = '';
 
 let staticSection: string | undefined;
 let _staticSection: string | undefined;
@@ -53,7 +46,7 @@ let staticCategory: string | undefined;
 const modifiedSet = new Set<string>();
 
 const TabsList = styled(TabsListUnstyled)`
-  background-color: "transparent";
+  background-color: 'transparent';
   display: flex;
   align-items: center;
   justify-content: left;
@@ -84,7 +77,7 @@ const createTab = (fontColor: string, borderColor: string) => {
   `;
 };
 
-createTab("", "");
+createTab('', '');
 
 const findEntry = (obj: any, key: string): any => {
   let result: any;
@@ -92,9 +85,9 @@ const findEntry = (obj: any, key: string): any => {
     if (obj.hasOwnProperty(property)) {
       if (property === key) {
         return obj[key];
-      } else if (typeof obj[property] === "object") {
+      } else if (typeof obj[property] === 'object') {
         result = findEntry(obj[property], key);
-        if (typeof result !== "undefined") {
+        if (typeof result !== 'undefined') {
           return result;
         }
       }
@@ -112,7 +105,7 @@ const buildTrees = (configJSON: any): any => {
       };
     })
     .filter((item: any) => {
-      return !item.key.startsWith("#");
+      return !item.key.startsWith('#');
     });
   dynamicConfigList.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
@@ -125,7 +118,7 @@ const buildTrees = (configJSON: any): any => {
       };
     })
     .filter((item: any) => {
-      return !item.key.startsWith("#");
+      return !item.key.startsWith('#');
     });
   staticConfigList.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
@@ -134,14 +127,14 @@ const buildTrees = (configJSON: any): any => {
   const categories: any = {};
   Object.keys(configJSON.staticConfiguration).forEach((item: any) => {
     const entry = configJSON.staticConfiguration[item];
-    if (entry.hasOwnProperty("section")) {
+    if (entry.hasOwnProperty('section')) {
       if (!sections.has(entry.section)) {
         sections.add(entry.section);
         categories[entry.section] = new Set();
         staticConfigTree[entry.section] = {};
       }
     }
-    if (entry.hasOwnProperty("category")) {
+    if (entry.hasOwnProperty('category')) {
       if (!categories[entry.section].has(entry.category)) {
         categories[entry.section].add(entry.category);
         staticConfigTree[entry.section][entry.category] = [];
@@ -160,10 +153,10 @@ const buildTrees = (configJSON: any): any => {
 };
 
 const stringEntry2NumberEntry = (entry: string): number[] | number | null => {
-  if (entry === "") {
+  if (entry === '') {
     return null;
   }
-  const stringEntry: string[] = entry.split(",");
+  const stringEntry: string[] = entry.split(',');
   const numberEntry: number[] = [];
   for (const element of stringEntry) {
     const num = Number(element);
@@ -184,12 +177,12 @@ export const Landing = (props: any): JSX.Element => {
   const [anchorElL1, setAnchorElL1] = React.useState<null | HTMLElement>(null);
   const [anchorElL2, setAnchorElL2] = React.useState<null | HTMLElement>(null);
   const [configListWidth, setConfigListWidth] = useState<number>(PANEL_WIDTH);
-  const [configTab, setConfigTab] = useState<string>("dynamic");
-  const [section, setSection] = useState<string>("");
-  const [search, setSearch] = useState<string>("");
+  const [configTab, setConfigTab] = useState<string>('dynamic');
+  const [section, setSection] = useState<string>('');
+  const [search, setSearch] = useState<string>('');
   const [trees, setTrees] = useState<any>({});
   const [config, setConfig] = useState<any>({});
-  const [configKey, setConfigKey] = useState<string>("");
+  const [configKey, setConfigKey] = useState<string>('');
   const [configData, setConfigData] = useState<any>(null);
   const [configValue, setConfigValue] = useState<any>(null);
   const [configNames, setConfigNames] = useState<any>(null);
@@ -204,10 +197,10 @@ export const Landing = (props: any): JSX.Element => {
   const openMenuL2 = Boolean(anchorElL2);
 
   const updateConfigEntry = () => {
-    if (configKey === "") {
+    if (configKey === '') {
       return;
     }
-    if (typeof configValue !== "string") {
+    if (typeof configValue !== 'string') {
       config[configKey] = configValue;
       return;
     }
@@ -235,9 +228,9 @@ export const Landing = (props: any): JSX.Element => {
     if (_staticSection && staticCategory) {
       staticSection = _staticSection;
       updateConfigEntry();
-      setSection(staticSection + " - " + staticCategory);
-      setSearch("");
-      setConfigKey("");
+      setSection(staticSection + ' - ' + staticCategory);
+      setSearch('');
+      setConfigKey('');
       setConfigNames(
         trees.staticConfigTree[staticSection][
           staticCategory
@@ -249,13 +242,13 @@ export const Landing = (props: any): JSX.Element => {
   };
 
   const handleMenuOpenAll = () => {
-    staticSection = "All";
+    staticSection = 'All';
     _staticSection = undefined;
     staticCategory = undefined;
     updateConfigEntry();
-    setSection("All");
-    setSearch("");
-    setConfigKey("");
+    setSection('All');
+    setSearch('');
+    setConfigKey('');
     setConfigNames(trees.staticConfigList);
     setAnchorElL1(null);
     setAnchorElL2(null);
@@ -275,13 +268,13 @@ export const Landing = (props: any): JSX.Element => {
     tabValue: string | number
   ) => {
     updateConfigEntry();
-    setSearch("");
-    setConfigKey("");
+    setSearch('');
+    setConfigKey('');
     setConfigNames(null);
     if (tabValue === 0) {
-      setConfigTab("dynamic");
+      setConfigTab('dynamic');
     } else {
-      setConfigTab("static");
+      setConfigTab('static');
     }
   };
 
@@ -290,15 +283,15 @@ export const Landing = (props: any): JSX.Element => {
   };
 
   const handleConfigValueInputChange = (value: string) => {
-    if (value !== "" && !/^[+\-0-9.,]+$/.test(value)) {
+    if (value !== '' && !/^[+\-0-9.,]+$/.test(value)) {
       return;
     }
-    if (value.split(",").length !== numValues) {
+    if (value.split(',').length !== numValues) {
       return;
     }
     setConfigValue(value);
     const numberEntry = stringEntry2NumberEntry(value);
-    if (configTab === "dynamic") {
+    if (configTab === 'dynamic') {
       setShowReload(!(numberEntry === props.config.dynamic[configKey]));
     } else {
       const modified = !(numberEntry === props.config.static[configKey]);
@@ -321,7 +314,7 @@ export const Landing = (props: any): JSX.Element => {
     } else {
       setNumValues(1);
     }
-    if (configTab === "dynamic") {
+    if (configTab === 'dynamic') {
       setShowReload(!(config[key] === props.config.dynamic[key]));
     } else {
       setShowReload(!(config[key] === props.config.static[key]));
@@ -331,15 +324,15 @@ export const Landing = (props: any): JSX.Element => {
   const handleWriteToFlashRAMClick = (target: string) => {
     try {
       updateConfigEntry();
-      props.writeConfig(dynamicConfig, staticConfig, target === "toFlash");
+      props.writeConfig(dynamicConfig, staticConfig, target === 'toFlash');
       props.readConfig();
       snackMessage =
-        target === "toFlash"
+        target === 'toFlash'
           ? SNACK_MESSAGE_WRITE_TO_FLASH
           : SNACK_MESSAGE_WRITE_TO_RAM;
       setSnackbar(true);
       setShowReload(false);
-      modifiedSet.forEach((item) => {
+      modifiedSet.forEach(item => {
         props.addStaticConfigUsage(item, target);
       });
       modifiedSet.clear();
@@ -356,7 +349,7 @@ export const Landing = (props: any): JSX.Element => {
           dense
           component={ButtonBase}
           onClick={() => handleMenuOpenAll()}
-          sx={{ width: "100%" }}
+          sx={{ width: '100%' }}
         >
           <Typography variant="body2">All</Typography>
         </MenuItem>
@@ -371,7 +364,7 @@ export const Landing = (props: any): JSX.Element => {
                 onClick={(event: React.MouseEvent<HTMLButtonElement>) =>
                   handleMenuOpenL2(event, item)
                 }
-                sx={{ width: "100%" }}
+                sx={{ width: '100%' }}
               >
                 <Typography variant="body2">{item}</Typography>
               </MenuItem>
@@ -390,8 +383,8 @@ export const Landing = (props: any): JSX.Element => {
         anchorEl={anchorElL2}
         open={openMenuL2}
         onClose={handleMenuCloseL2}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        transformOrigin={{ vertical: "top", horizontal: "left" }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       >
         {Object.keys(trees.staticConfigTree[_staticSection])
           .sort()
@@ -402,7 +395,7 @@ export const Landing = (props: any): JSX.Element => {
                 dense
                 component={ButtonBase}
                 onClick={() => handleMenuOpenL3(item)}
-                sx={{ width: "100%" }}
+                sx={{ width: '100%' }}
               >
                 <Typography variant="body2">{item}</Typography>
               </MenuItem>
@@ -421,15 +414,15 @@ export const Landing = (props: any): JSX.Element => {
       output.push(
         <Tooltip
           key={index}
-          title={item.section + " - " + item.category}
+          title={item.section + ' - ' + item.category}
           enterDelay={1000}
           placement="bottom-start"
-          disableHoverListener={section !== "All"}
+          disableHoverListener={section !== 'All'}
         >
           <ListItem dense divider>
             <ListItemButton
               onClick={() => handleListItemClick(item.key)}
-              sx={{ padding: "0px 0px" }}
+              sx={{ padding: '0px 0px' }}
             >
               <ListItemText primary={item.name.trim()} />
             </ListItemButton>
@@ -445,20 +438,20 @@ export const Landing = (props: any): JSX.Element => {
       <>
         <Stack spacing={2}>
           <Typography
-            sx={{ marginBottom: "8px", fontSize: "1.1rem", fontWeight: "bold" }}
+            sx={{ marginBottom: '8px', fontSize: '1.1rem', fontWeight: 'bold' }}
           >
             {configData.name}
           </Typography>
           <div>
             <Stack spacing={1} direction="row">
               {numValues > 1 ? (
-                <Typography sx={{ fontWeight: "bold" }}>Values</Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>Values</Typography>
               ) : (
-                <Typography sx={{ fontWeight: "bold" }}>Value</Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>Value</Typography>
               )}
               <Tooltip
                 title={
-                  "reload value" + (numValues > 1 ? "s" : "") + " from RAM"
+                  'reload value' + (numValues > 1 ? 's' : '') + ' from RAM'
                 }
                 enterDelay={500}
                 placement="bottom-start"
@@ -469,7 +462,7 @@ export const Landing = (props: any): JSX.Element => {
                     size="small"
                     disabled={!showReload}
                     onClick={() => {
-                      if (configTab === "dynamic") {
+                      if (configTab === 'dynamic') {
                         setConfigValue(props.config.dynamic[configKey]);
                       } else {
                         setConfigValue(props.config.static[configKey]);
@@ -477,7 +470,7 @@ export const Landing = (props: any): JSX.Element => {
                       }
                       setShowReload(false);
                     }}
-                    sx={{ padding: "0px" }}
+                    sx={{ padding: '0px' }}
                   >
                     <RestartAltIcon fontSize="medium" />
                   </IconButton>
@@ -487,11 +480,11 @@ export const Landing = (props: any): JSX.Element => {
             <FormControl
               variant="outlined"
               size="small"
-              sx={{ width: "100%", minWidth: PANEL_WIDTH + "px" }}
+              sx={{ width: '100%', minWidth: PANEL_WIDTH + 'px' }}
             >
               <OutlinedInput
                 value={configValue}
-                onChange={(event) =>
+                onChange={event =>
                   handleConfigValueInputChange(event.target.value)
                 }
               />
@@ -500,38 +493,38 @@ export const Landing = (props: any): JSX.Element => {
           <div>
             <Stack spacing={5} direction="row">
               <div>
-                <Typography sx={{ fontWeight: "bold" }}>Type</Typography>
-                <Typography sx={{ whiteSpace: "pre-wrap" }}>
+                <Typography sx={{ fontWeight: 'bold' }}>Type</Typography>
+                <Typography sx={{ whiteSpace: 'pre-wrap' }}>
                   {configData.type}
                 </Typography>
               </div>
               <div>
-                <Typography sx={{ fontWeight: "bold" }}>Min</Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>Min</Typography>
                 <Typography
-                  sx={{ textAlign: "center", whiteSpace: "pre-wrap" }}
+                  sx={{ textAlign: 'center', whiteSpace: 'pre-wrap' }}
                 >
                   {configData.min}
                 </Typography>
               </div>
               <div>
-                <Typography sx={{ fontWeight: "bold" }}>Max</Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>Max</Typography>
                 <Typography
-                  sx={{ textAlign: "center", whiteSpace: "pre-wrap" }}
+                  sx={{ textAlign: 'center', whiteSpace: 'pre-wrap' }}
                 >
                   {configData.max}
                 </Typography>
               </div>
               <div>
-                <Typography sx={{ fontWeight: "bold" }}>Elements</Typography>
-                {"elements" in configData ? (
+                <Typography sx={{ fontWeight: 'bold' }}>Elements</Typography>
+                {'elements' in configData ? (
                   <Typography
-                    sx={{ textAlign: "center", whiteSpace: "pre-wrap" }}
+                    sx={{ textAlign: 'center', whiteSpace: 'pre-wrap' }}
                   >
                     {configData.elements}
                   </Typography>
                 ) : (
                   <Typography
-                    sx={{ textAlign: "center", whiteSpace: "pre-wrap" }}
+                    sx={{ textAlign: 'center', whiteSpace: 'pre-wrap' }}
                   >
                     1
                   </Typography>
@@ -540,13 +533,13 @@ export const Landing = (props: any): JSX.Element => {
             </Stack>
           </div>
           <div>
-            <Typography sx={{ fontWeight: "bold" }}>Label</Typography>
-            <Typography sx={{ whiteSpace: "pre-wrap" }}>{configKey}</Typography>
+            <Typography sx={{ fontWeight: 'bold' }}>Label</Typography>
+            <Typography sx={{ whiteSpace: 'pre-wrap' }}>{configKey}</Typography>
           </div>
           <div>
-            <Typography sx={{ fontWeight: "bold" }}>Description</Typography>
+            <Typography sx={{ fontWeight: 'bold' }}>Description</Typography>
             {configData.description && (
-              <Typography sx={{ whiteSpace: "pre-wrap" }}>
+              <Typography sx={{ whiteSpace: 'pre-wrap' }}>
                 {configData.description.trim()}
               </Typography>
             )}
@@ -561,7 +554,7 @@ export const Landing = (props: any): JSX.Element => {
   }, [theme]);
 
   useEffect(() => {
-    const list = document.getElementById("webds_config_editor_config_key_list");
+    const list = document.getElementById('webds_config_editor_config_key_list');
     if (list) {
       if (list.clientWidth === PANEL_WIDTH) {
         setConfigListWidth(list.clientWidth);
@@ -572,10 +565,10 @@ export const Landing = (props: any): JSX.Element => {
   }, [configNames]);
 
   useEffect(() => {
-    if (configTab === "dynamic") {
+    if (configTab === 'dynamic') {
       setConfigNames(trees.dynamicConfigList);
     } else {
-      if (staticSection === "All") {
+      if (staticSection === 'All') {
         setConfigNames(trees.staticConfigList);
       } else if (staticSection && staticCategory) {
         setConfigNames(
@@ -588,13 +581,13 @@ export const Landing = (props: any): JSX.Element => {
   }, [configTab, trees]);
 
   useEffect(() => {
-    if (configKey !== "") {
+    if (configKey !== '') {
       setConfigValue(config[configKey]);
     }
   }, [config, configKey]);
 
   useEffect(() => {
-    if (configTab === "dynamic") {
+    if (configTab === 'dynamic') {
       setConfig(dynamicConfig);
     } else {
       setConfig(staticConfig);
@@ -625,53 +618,51 @@ export const Landing = (props: any): JSX.Element => {
         <Content>
           <TabsUnstyled defaultValue={0} onChange={handleTabChange}>
             <TabsList>
-              <Tab sx={{ paddingTop: "5px" }}>Dynamic Config</Tab>
-              <Tab sx={{ paddingTop: "5px" }}>Static Config</Tab>
+              <Tab sx={{ paddingTop: '5px' }}>Dynamic Config</Tab>
+              <Tab sx={{ paddingTop: '5px' }}>Static Config</Tab>
             </TabsList>
           </TabsUnstyled>
-          <div style={{ position: "absolute", top: "24px", right: "24px" }}>
+          <div style={{ position: 'absolute', top: '24px', right: '24px' }}>
             <FormControl variant="outlined" size="small">
               <OutlinedInput
                 value={search}
                 placeholder="Search"
-                onChange={(event) =>
-                  handleSearchInputChange(event.target.value)
-                }
-                sx={{ width: "300px", height: "24px" }}
+                onChange={event => handleSearchInputChange(event.target.value)}
+                sx={{ width: '300px', height: '24px' }}
               />
             </FormControl>
           </div>
           <Box
             sx={{
-              padding: "8px",
-              boxSizing: "border-box",
-              display: "flex",
-              flexFlow: "row",
+              padding: '8px',
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexFlow: 'row',
               border: 1,
               borderRadius: 1,
-              borderColor: "divider"
+              borderColor: 'divider'
             }}
           >
             <Box
               sx={{
-                width: PANEL_WIDTH + "px",
-                height: PANEL_HEIGHT + "px",
-                display: "flex",
-                flexFlow: "column"
+                width: PANEL_WIDTH + 'px',
+                height: PANEL_HEIGHT + 'px',
+                display: 'flex',
+                flexFlow: 'column'
               }}
             >
-              {configTab === "static" && (
+              {configTab === 'static' && (
                 <>
                   <div
                     onClick={handleMenuOpenL1}
                     style={{
-                      width: "100%",
-                      marginTop: "8px",
-                      marginBottom: "16px",
-                      cursor: "pointer"
+                      width: '100%',
+                      marginTop: '8px',
+                      marginBottom: '16px',
+                      cursor: 'pointer'
                     }}
                   >
-                    <div style={{ display: "flex", flexFlow: "row" }}>
+                    <div style={{ display: 'flex', flexFlow: 'row' }}>
                       <ArrowRightIcon
                         fontSize="large"
                         style={{ color: props.fontColor }}
@@ -679,20 +670,20 @@ export const Landing = (props: any): JSX.Element => {
                       <div
                         style={{
                           flex: 1,
-                          display: "flex",
-                          alignItems: "center"
+                          display: 'flex',
+                          alignItems: 'center'
                         }}
                       >
-                        {section === "" ? (
+                        {section === '' ? (
                           <Typography
-                            sx={{ flex: 1, textAlign: "center", color: "gray" }}
+                            sx={{ flex: 1, textAlign: 'center', color: 'gray' }}
                           >
                             Section
                           </Typography>
                         ) : (
                           <Typography
                             variant="body2"
-                            sx={{ flex: 1, textAlign: "center" }}
+                            sx={{ flex: 1, textAlign: 'center' }}
                           >
                             {section}
                           </Typography>
@@ -707,9 +698,9 @@ export const Landing = (props: any): JSX.Element => {
               )}
               <div
                 id="webds_config_editor_config_key_list"
-                style={{ flex: 1, overflow: "auto" }}
+                style={{ flex: 1, overflow: 'auto' }}
               >
-                <List sx={{ width: configListWidth + "px" }}>
+                <List sx={{ width: configListWidth + 'px' }}>
                   {generateListItems()}
                 </List>
               </div>
@@ -717,21 +708,21 @@ export const Landing = (props: any): JSX.Element => {
             <Divider
               orientation="vertical"
               sx={{
-                height: PANEL_HEIGHT + "px",
-                marginLeft: "16px",
-                marginRight: "16px"
+                height: PANEL_HEIGHT + 'px',
+                marginLeft: '16px',
+                marginRight: '16px'
               }}
             />
             <Box
               sx={{
                 flex: 1,
-                height: PANEL_HEIGHT + "px",
-                display: "flex",
-                flexFlow: "column"
+                height: PANEL_HEIGHT + 'px',
+                display: 'flex',
+                flexFlow: 'column'
               }}
             >
-              <div style={{ flex: 1, overflow: "auto" }}>
-                {configKey !== "" && configData !== null && displayConfigData()}
+              <div style={{ flex: 1, overflow: 'auto' }}>
+                {configKey !== '' && configData !== null && displayConfigData()}
               </div>
             </Box>
           </Box>
@@ -739,31 +730,31 @@ export const Landing = (props: any): JSX.Element => {
         <Controls>
           <div
             style={{
-              width: MIN_WIDTH - CANVAS_ATTRS.PADDING * 2 + "px",
+              width: MIN_WIDTH - CANVAS_ATTRS.PADDING * 2 + 'px',
               minHeight:
                 CANVAS_ATTRS.MIN_HEIGHT_CONTROLS -
                 CANVAS_ATTRS.PADDING * 2 +
-                "px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center"
+                'px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
             <Stack spacing={2} direction="row">
               <Button
                 onClick={() => {
-                  handleWriteToFlashRAMClick("toRAM");
+                  handleWriteToFlashRAMClick('toRAM');
                 }}
-                sx={{ width: "150px" }}
+                sx={{ width: '150px' }}
               >
                 Write to RAM
               </Button>
               <Button
                 onClick={() => {
-                  handleWriteToFlashRAMClick("toFlash");
+                  handleWriteToFlashRAMClick('toFlash');
                 }}
-                sx={{ width: "150px" }}
+                sx={{ width: '150px' }}
               >
                 Write to Flash
               </Button>
@@ -778,10 +769,10 @@ export const Landing = (props: any): JSX.Element => {
               modifiedSet.clear();
             }}
             sx={{
-              position: "absolute",
-              top: "50%",
-              right: "24px",
-              transform: "translate(0%, -50%)"
+              position: 'absolute',
+              top: '50%',
+              right: '24px',
+              transform: 'translate(0%, -50%)'
             }}
           >
             <Typography variant="underline">Reload from RAM</Typography>
@@ -791,7 +782,7 @@ export const Landing = (props: any): JSX.Element => {
       <Snackbar
         open={snackbar}
         autoHideDuration={3000}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         message={snackMessage}
         onClose={() => setSnackbar(false)}
       />

@@ -1,28 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import Alert from "@mui/material/Alert";
-
-import CircularProgress from "@mui/material/CircularProgress";
-
-import { ThemeProvider } from "@mui/material/styles";
-
-import Landing from "./Landing";
-
-import { requestAPI, webdsService } from "./local_exports";
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import { ThemeProvider } from '@mui/material/styles';
 
 import {
-  ALERT_MESSAGE_READ_DYNAMIC,
-  ALERT_MESSAGE_WRITE_DYNAMIC,
-  ALERT_MESSAGE_READ_STATIC,
-  ALERT_MESSAGE_WRITE_STATIC,
+  ALERT_MESSAGE_ADD_PRIVATE_CONFIG_JSON,
+  ALERT_MESSAGE_ADD_PUBLIC_CONFIG_JSON,
   ALERT_MESSAGE_COMMIT_CONFIG,
   ALERT_MESSAGE_PACKRAT_ID,
-  ALERT_MESSAGE_ADD_PUBLIC_CONFIG_JSON,
-  ALERT_MESSAGE_ADD_PRIVATE_CONFIG_JSON,
-  ALERT_MESSAGE_READ_CONFIG_JSON
-} from "./constants";
+  ALERT_MESSAGE_READ_CONFIG_JSON,
+  ALERT_MESSAGE_READ_DYNAMIC,
+  ALERT_MESSAGE_READ_STATIC,
+  ALERT_MESSAGE_WRITE_DYNAMIC,
+  ALERT_MESSAGE_WRITE_STATIC
+} from './constants';
+import Landing from './Landing';
+import { requestAPI, webdsService } from './local_exports';
 
-let alertMessage = "";
+let alertMessage = '';
 
 export const ConfigEditorComponent = (props: any) => {
   const [initialized, setInitialized] = useState<boolean>(false);
@@ -69,10 +65,10 @@ export const ConfigEditorComponent = (props: any) => {
     try {
       let config: any;
       if (external) {
-        config = await requestAPI<any>("packrat/" + packratID + "/config.json");
+        config = await requestAPI<any>('packrat/' + packratID + '/config.json');
       } else {
         config = await requestAPI<any>(
-          "packrat/" + packratID + "/config_private.json"
+          'packrat/' + packratID + '/config_private.json'
         );
       }
       setConfigJSON(config);
@@ -101,12 +97,12 @@ export const ConfigEditorComponent = (props: any) => {
     let dynamicConfig: any;
     let staticConfig: any;
     let dataToSend: any = {
-      command: "getDynamicConfig"
+      command: 'getDynamicConfig'
     };
     try {
-      dynamicConfig = await requestAPI<any>("command", {
+      dynamicConfig = await requestAPI<any>('command', {
         body: JSON.stringify(dataToSend),
-        method: "POST"
+        method: 'POST'
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
@@ -114,12 +110,12 @@ export const ConfigEditorComponent = (props: any) => {
       throw error;
     }
     dataToSend = {
-      command: "getStaticConfig"
+      command: 'getStaticConfig'
     };
     try {
-      staticConfig = await requestAPI<any>("command", {
+      staticConfig = await requestAPI<any>('command', {
         body: JSON.stringify(dataToSend),
-        method: "POST"
+        method: 'POST'
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
@@ -144,13 +140,13 @@ export const ConfigEditorComponent = (props: any) => {
     commit: boolean
   ) => {
     let dataToSend: any = {
-      command: "setDynamicConfig",
+      command: 'setDynamicConfig',
       payload: [dynamicConfig]
     };
     try {
-      await requestAPI<any>("command", {
+      await requestAPI<any>('command', {
         body: JSON.stringify(dataToSend),
-        method: "POST"
+        method: 'POST'
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
@@ -158,13 +154,13 @@ export const ConfigEditorComponent = (props: any) => {
       throw error;
     }
     dataToSend = {
-      command: "setStaticConfig",
+      command: 'setStaticConfig',
       payload: [staticConfig]
     };
     try {
-      await requestAPI<any>("command", {
+      await requestAPI<any>('command', {
         body: JSON.stringify(dataToSend),
-        method: "POST"
+        method: 'POST'
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
@@ -173,12 +169,12 @@ export const ConfigEditorComponent = (props: any) => {
     }
     if (commit) {
       dataToSend = {
-        command: "commitConfig"
+        command: 'commitConfig'
       };
       try {
-        await requestAPI<any>("command", {
+        await requestAPI<any>('command', {
           body: JSON.stringify(dataToSend),
-          method: "POST"
+          method: 'POST'
         });
       } catch (error) {
         console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
@@ -219,7 +215,7 @@ export const ConfigEditorComponent = (props: any) => {
             <Alert
               severity="error"
               onClose={() => setAlert(false)}
-              sx={{ whiteSpace: "pre-wrap" }}
+              sx={{ whiteSpace: 'pre-wrap' }}
             >
               {alertMessage}
             </Alert>
@@ -238,10 +234,10 @@ export const ConfigEditorComponent = (props: any) => {
         {!initialized && (
           <div
             style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)"
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
             }}
           >
             <CircularProgress color="primary" />

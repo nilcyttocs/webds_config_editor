@@ -2,24 +2,20 @@ import {
   ILayoutRestorer,
   JupyterFrontEnd,
   JupyterFrontEndPlugin
-} from "@jupyterlab/application";
+} from '@jupyterlab/application';
+import { WidgetTracker } from '@jupyterlab/apputils';
+import { ILauncher } from '@jupyterlab/launcher';
+import { WebDSService, WebDSWidget } from '@webds/service';
 
-import { WidgetTracker } from "@jupyterlab/apputils";
-
-import { ILauncher } from "@jupyterlab/launcher";
-
-import { WebDSService, WebDSWidget } from "@webds/service";
-
-import { configEditorIcon } from "./icons";
-
-import ConfigEditorWidget from "./widget/ConfigEditorWidget";
+import { configEditorIcon } from './icons';
+import ConfigEditorWidget from './widget/ConfigEditorWidget';
 
 namespace Attributes {
-  export const command = "webds_config_editor:open";
-  export const id = "webds_config_editor_widget";
-  export const label = "Configuration Editor";
-  export const caption = "Configuration Editor";
-  export const category = "Touch - Config Library";
+  export const command = 'webds_config_editor:open';
+  export const id = 'webds_config_editor_widget';
+  export const label = 'Configuration Editor';
+  export const caption = 'Configuration Editor';
+  export const category = 'Touch - Config Library';
   export const rank = 10;
 }
 
@@ -29,7 +25,7 @@ export let webdsService: WebDSService;
  * Initialization data for the @webds/config_editor extension.
  */
 const plugin: JupyterFrontEndPlugin<void> = {
-  id: "@webds/config_editor:plugin",
+  id: '@webds/config_editor:plugin',
   autoStart: true,
   requires: [ILauncher, ILayoutRestorer, WebDSService],
   activate: (
@@ -38,7 +34,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     restorer: ILayoutRestorer,
     service: WebDSService
   ) => {
-    console.log("JupyterLab extension @webds/config_editor is activated!");
+    console.log('JupyterLab extension @webds/config_editor is activated!');
 
     webdsService = service;
 
@@ -49,7 +45,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       label: Attributes.label,
       caption: Attributes.caption,
       icon: (args: { [x: string]: any }) => {
-        return args["isLauncher"] ? configEditorIcon : undefined;
+        return args['isLauncher'] ? configEditorIcon : undefined;
       },
       execute: () => {
         if (!widget || widget.isDisposed) {
@@ -63,7 +59,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
         if (!tracker.has(widget)) tracker.add(widget);
 
-        if (!widget.isAttached) shell.add(widget, "main");
+        if (!widget.isAttached) shell.add(widget, 'main');
 
         shell.activateById(widget.id);
       }
