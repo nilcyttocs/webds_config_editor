@@ -15,7 +15,7 @@ namespace Attributes {
   export const id = 'webds_config_editor_widget';
   export const label = 'Configuration Editor';
   export const caption = 'Configuration Editor';
-  export const category = 'Touch - Config Library';
+  export const category = 'Device - Config Library';
   export const rank = 10;
 }
 
