@@ -18,21 +18,14 @@ import {
 import Landing from './Landing';
 import { requestAPI, webdsService } from './local_exports';
 
-let alertMessage = '';
-
 export const ConfigEditorComponent = (props: any) => {
   const [initialized, setInitialized] = useState<boolean>(false);
-  const [alert, setAlert] = useState<boolean>(false);
+  const [alert, setAlert] = useState<string | undefined>(undefined);
   const [config, setConfig] = useState<any>(null);
   const [configJSON, setConfigJSON] = useState<any>(null);
 
   const webdsTheme = webdsService.ui.getWebDSTheme();
   const addStaticConfigUsage = webdsService.analytics.addStaticConfigUsage;
-
-  const showAlert = (message: string) => {
-    alertMessage = message;
-    setAlert(true);
-  };
 
   const retrieveConfigJSON = async (buildID?: number) => {
     const external = webdsService.pinormos.isExternal();
@@ -45,9 +38,9 @@ export const ConfigEditorComponent = (props: any) => {
     } catch (error) {
       console.error(error);
       if (external) {
-        showAlert(ALERT_MESSAGE_ADD_PUBLIC_CONFIG_JSON);
+        setAlert(ALERT_MESSAGE_ADD_PUBLIC_CONFIG_JSON);
       } else {
-        showAlert(ALERT_MESSAGE_ADD_PRIVATE_CONFIG_JSON);
+        setAlert(ALERT_MESSAGE_ADD_PRIVATE_CONFIG_JSON);
       }
       throw error;
     }
@@ -56,7 +49,7 @@ export const ConfigEditorComponent = (props: any) => {
       packratID = await webdsService.touchcomm.getPackratID();
     } catch (error) {
       console.error(error);
-      showAlert(ALERT_MESSAGE_PACKRAT_ID);
+      setAlert(ALERT_MESSAGE_PACKRAT_ID);
       throw error;
     }
     if (buildID && buildID === packratID) {
@@ -82,7 +75,7 @@ export const ConfigEditorComponent = (props: any) => {
           `Error - GET /webds/packrat/${packratID}/config_private.json\n${error}`
         );
       }
-      showAlert(ALERT_MESSAGE_READ_CONFIG_JSON);
+      setAlert(ALERT_MESSAGE_READ_CONFIG_JSON);
       throw error;
     }
   };
@@ -106,7 +99,7 @@ export const ConfigEditorComponent = (props: any) => {
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
-      showAlert(ALERT_MESSAGE_READ_DYNAMIC);
+      setAlert(ALERT_MESSAGE_READ_DYNAMIC);
       throw error;
     }
     dataToSend = {
@@ -119,7 +112,7 @@ export const ConfigEditorComponent = (props: any) => {
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
-      showAlert(ALERT_MESSAGE_READ_STATIC);
+      setAlert(ALERT_MESSAGE_READ_STATIC);
       throw error;
     }
     setConfig({
@@ -150,7 +143,7 @@ export const ConfigEditorComponent = (props: any) => {
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
-      showAlert(ALERT_MESSAGE_WRITE_DYNAMIC);
+      setAlert(ALERT_MESSAGE_WRITE_DYNAMIC);
       throw error;
     }
     dataToSend = {
@@ -164,7 +157,7 @@ export const ConfigEditorComponent = (props: any) => {
       });
     } catch (error) {
       console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
-      showAlert(ALERT_MESSAGE_WRITE_STATIC);
+      setAlert(ALERT_MESSAGE_WRITE_STATIC);
       throw error;
     }
     if (commit) {
@@ -178,7 +171,7 @@ export const ConfigEditorComponent = (props: any) => {
         });
       } catch (error) {
         console.error(`Error - POST /webds/command\n${dataToSend}\n${error}`);
-        showAlert(ALERT_MESSAGE_COMMIT_CONFIG);
+        setAlert(ALERT_MESSAGE_COMMIT_CONFIG);
         throw error;
       }
     }
@@ -211,17 +204,18 @@ export const ConfigEditorComponent = (props: any) => {
     <>
       <ThemeProvider theme={webdsTheme}>
         <div className="jp-webds-widget-body">
-          {alert && (
+          {alert !== undefined && (
             <Alert
               severity="error"
-              onClose={() => setAlert(false)}
+              onClose={() => setAlert(undefined)}
               sx={{ whiteSpace: 'pre-wrap' }}
             >
-              {alertMessage}
+              {alert}
             </Alert>
           )}
           {initialized && (
             <Landing
+              setAlert={setAlert}
               addStaticConfigUsage={addStaticConfigUsage}
               config={config}
               readConfig={_readConfig}
